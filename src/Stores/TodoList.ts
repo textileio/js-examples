@@ -1,5 +1,5 @@
 import { action, observable } from "mobx";
-import { Client } from "@textile/threads-client";
+import { Client, Config, BaseConfig } from "@textile/threads-client";
 import queryString from "query-string";
 import TodoItem, { TodoType } from "./TodoItem";
 
@@ -9,9 +9,9 @@ export class TodoList {
 
   @observable.shallow list: TodoItem[] = [];
 
-  constructor(todos: string[], host: string = "http://localhost:6007") {
+  constructor(todos: string[], config: Config | BaseConfig) {
     todos.forEach(this.addTodo);
-    this.client = new Client({ host });
+    this.client = new Client(config);
     const parsed = queryString.parse(window.location.search);
     if (parsed.id) {
       this.listID = parsed.id.toString();
@@ -22,7 +22,7 @@ export class TodoList {
       this.client.registerSchema(store.id, "Todo", schema).then(() => {
         this.client.start(store.id).then(() => {
           this.listID = store.id;
-          const query = { id: store.id };
+          const query = { ...parsed, id: store.id };
           window.location.search = queryString.stringify(query);
         });
       });

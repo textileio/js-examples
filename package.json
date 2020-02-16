@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
+    "@textile/textile": "0.0.6",
     "@textile/threads-client": "^0.2.6",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^1.5.2",
@@ -14,7 +15,8 @@
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.1",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.2"
+    "semantic-ui-react": "^0.88.2",
+    "uuid": "^3.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -42,6 +44,7 @@
     "@types/node": "^12.12.27",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
+    "@types/uuid": "^3.4.7",
     "typescript": "^3.7.5"
   }
 }
