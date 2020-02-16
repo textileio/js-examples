@@ -40,5 +40,7 @@ jobs:
         RECORD_VALUE: "dnslink=/ipfs/${{ steps.push.outputs.cid }}"
         RECORD_NAME: "_dnslink.todo"
         RECORD_TTL: "1" 
+        CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+        CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
       id: dnslink
       uses: xorilog/cloudflare-dns-action@master
