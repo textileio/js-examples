@@ -1,0 +1,44 @@
+name: bucket_push
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  bucket_push:
+    runs-on: ubuntu-latest
+    name: Update a Textile bucket
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Install
+      run: npm install
+    - name: Build
+      run: npm run build
+    - name: Textile Bucket Push
+      id: push
+      uses: textileio/github-action-bucket-push@v3
+      with:
+        bucket-name: 'textile-js-todo-demo'
+        path: 'build/*'
+        token: ${{ secrets.TEXTILE_AUTH_TOKEN }}
+    # Use the output from the `hello` step
+    - name: Get the output CID
+      run: echo "The CID was ${{ steps.push.outputs.cid }}"
+    - name: Update DNSLink
+      env:
+        RECORD_DOMAIN: "txtl.us"
+        RECORD_TYPE: "TXT"
+        RECORD_VALUE: "dnslink=/ipfs/${{ steps.push.outputs.cid }}"
+        RECORD_NAME: "_dnslink.todo"
+        RECORD_TTL: "1" 
+      id: dnslink
+      uses: xorilog/cloudflare-dns-action@master
