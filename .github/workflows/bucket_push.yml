@@ -35,11 +35,11 @@ jobs:
       run: echo "The CID was ${{ steps.push.outputs.cid }}"
     - name: Update DNSLink
       env:
-        RECORD_DOMAIN: "txtl.us"
-        RECORD_TYPE: "TXT"
-        RECORD_VALUE: "dnslink=/ipfs/${{ steps.push.outputs.cid }}"
-        RECORD_NAME: "_dnslink.todo"
-        RECORD_TTL: "1" 
+        RECORD_DOMAIN: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        RECORD_TYPE: 'TXT'
+        RECORD_VALUE: 'dnslink=/ipfs/${{ steps.push.outputs.cid }}'
+        RECORD_NAME: '_dnslink.todo'
+        RECORD_TTL: '1' 
         CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
         CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
       id: dnslink
