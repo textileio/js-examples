@@ -3,13 +3,15 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import * as serviceWorker from "./serviceWorker";
+import registerServiceWorker from "./serviceWorker";
 import { StoreProvider } from "./Helpers/StoreProvider";
 import { TodoList } from "./Stores/TodoList";
 import "semantic-ui-css/semantic.min.css";
 import API from "@textile/textile";
 import uuid from "uuid";
 import queryString from "query-string";
+
+registerServiceWorker();
 
 let deviceId = uuid.v4()
 const parsed = queryString.parse(window.location.search);
@@ -38,9 +40,4 @@ new API({
       </StoreProvider>,
       document.getElementById("root")
     );
-
-    // If you want your app to work offline and load faster, you can change
-    // unregister() to register() below. Note this comes with some pitfalls.
-    // Learn more about service workers: https://bit.ly/CRA-PWA
-    serviceWorker.unregister();
   });

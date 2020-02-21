@@ -6,7 +6,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
-    "@textile/textile": "0.0.6",
+    "@textile/textile": "0.0.7",
     "@textile/threads-client": "^0.2.6",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^1.5.2",
