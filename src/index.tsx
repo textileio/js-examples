@@ -23,8 +23,7 @@ if (!parsed.user) {
 new API({
   // Hard-coded for demo purposes
   token: "54e24fc3-fda5-478a-b1f7-040ea5aaab33",
-  deviceId,
-  threadsApi: "104.210.43.77",
+  deviceId
 })
   .start()
   .then(api => {
