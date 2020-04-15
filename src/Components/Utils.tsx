@@ -1,4 +1,5 @@
-import { SemanticICONS } from "semantic-ui-react";
+import React, { useState, useEffect } from "react";
+import { Loader, SemanticICONS } from "semantic-ui-react";
 
 export function iconFromMimeType(mimeType: string): SemanticICONS {
   // List of official MIME Types: http://www.iana.org/assignments/media-types/media-types.xhtml
@@ -41,3 +42,15 @@ export function iconFromMimeType(mimeType: string): SemanticICONS {
   }
   return "file outline";
 }
+
+export const DelayedSpinner: React.FC<{ delay: number }> = ({ delay }) => {
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSpinner(true), delay);
+
+    return () => clearTimeout(timer);
+  });
+
+  return showSpinner ? <Loader indeterminate>Uploading files...</Loader> : null;
+};
