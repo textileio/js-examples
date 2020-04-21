@@ -47,9 +47,10 @@ export const schema: JSONSchema = {
 
 export interface State {
   files: Record<string, FileInfo>;
-  isLoading: boolean;
+  loading?: string;
   error?: string;
   threadID?: string;
+  box?: any; // 3box
 }
 
-export const initialState: State = { files: {}, isLoading: false };
+export const initialState: State = { files: {} };

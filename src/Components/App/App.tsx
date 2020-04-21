@@ -44,44 +44,56 @@ function App() {
     <div className="App" {...getRootProps()}>
       <Segment.Group style={{ height: "100%" }}>
         <Segment clearing>
-          <Header
-            style={{ cursor: "pointer" }}
-            as="h2"
-            floated="left"
-            onClick={() => {
-              store.dispatch({
-                type: "open_store",
-                id: "bafksdrszu7raxxqu6pimkwkev5qob7iw3rjlydpuavw62zfd2nnhhxi",
-              });
-            }}
-          >
+          <Header as="h2" floated="left" title="Authenticate and load store">
             Filebox
           </Header>
-          <Header as="h2" floated="right">
+          <Button
+            floated="right"
+            label={
+              <Label
+                as="label"
+                style={{ cursor: "pointer" }}
+                basic
+                children="Upload"
+              />
+            }
+            labelPosition="right"
+            icon="upload"
+            title="Upload file"
+            onClick={open}
+          />
+          <Button.Group floated="right">
             <Button
-              label={
-                <Label
-                  as="label"
-                  style={{ cursor: "pointer" }}
-                  basic
-                  children="Upload"
-                />
-              }
-              labelPosition="right"
-              icon="upload"
-              onClick={open}
+              icon="shield"
+              title="Login/logout"
+              toggle
+              active={store.state.box !== undefined}
+              onClick={() => {
+                store.dispatch({
+                  type: "authenticate",
+                });
+              }}
             />
-          </Header>
+            <Button
+              icon="unlock alternate"
+              title="Open box"
+              onClick={() => {
+                store.dispatch({
+                  type: "open_store",
+                  id: "",
+                });
+              }}
+            />
+          </Button.Group>
         </Segment>
-        <Viewer />
+        <Segment>
+          <Viewer />
+        </Segment>
       </Segment.Group>
-      <footer>
-        <Header as="h3" attached="top" textAlign="center">
-          Drag and drop files to add them
-        </Header>
-      </footer>
       <input {...getInputProps()} hidden />
-      {store.state.isLoading && <DelayedSpinner delay={500} />}
+      {store.state.loading !== undefined && (
+        <DelayedSpinner delay={500} message={store.state.loading} />
+      )}
       <Dimmer active={isDragActive}>
         <Header inverted as="h2">
           Drop files here

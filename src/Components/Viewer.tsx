@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Icon,
-  Segment,
-  Table,
-  Label,
-  Dropdown,
-  Input,
-  Form,
-} from "semantic-ui-react";
+import { Icon, Table, Label, Dropdown, Input, Form } from "semantic-ui-react";
 import Moment from "react-moment";
 import toPretty from "pretty-bytes";
 import { iconFromMimeType } from "./Utils";
@@ -115,35 +107,34 @@ export const Viewer: React.FC = () => {
 
   const files = Object.entries(store.state.files)
     .filter(([_, file]) => file.tags?.includes(debounced) || debounced === "")
+    .sort(([, a], [, b]) => b.added - a.added)
     .map(([id, file]) => <Row key={id} file={file} />);
 
   return (
-    <Segment>
-      <Table>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell colSpan={6} textAlign="right">
-              <Input
-                iconPosition="left"
-                placeholder="Filter..."
-                onChange={(event, { value }) => setFilter(value)}
-              >
-                <Icon name="filter" />
-                <input />
-              </Input>
-            </Table.HeaderCell>
-          </Table.Row>
-          <Table.Row>
-            <Table.HeaderCell width={4}>Name</Table.HeaderCell>
-            <Table.HeaderCell width={5}>Tags</Table.HeaderCell>
-            <Table.HeaderCell width={2} />
-            <Table.HeaderCell width={2}>Updated</Table.HeaderCell>
-            <Table.HeaderCell width={2}>Size</Table.HeaderCell>
-            <Table.HeaderCell width={1} />
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>{files}</Table.Body>
-      </Table>
-    </Segment>
+    <Table>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell colSpan={6} textAlign="right">
+            <Input
+              iconPosition="left"
+              placeholder="Filter..."
+              onChange={(event, { value }) => setFilter(value)}
+            >
+              <Icon name="filter" />
+              <input />
+            </Input>
+          </Table.HeaderCell>
+        </Table.Row>
+        <Table.Row>
+          <Table.HeaderCell width={4}>Name</Table.HeaderCell>
+          <Table.HeaderCell width={5}>Tags</Table.HeaderCell>
+          <Table.HeaderCell width={2} />
+          <Table.HeaderCell width={2}>Updated</Table.HeaderCell>
+          <Table.HeaderCell width={2}>Size</Table.HeaderCell>
+          <Table.HeaderCell width={1} />
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>{files}</Table.Body>
+    </Table>
   );
 };
