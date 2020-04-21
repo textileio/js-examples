@@ -1,0 +1,34 @@
+name: bucket_publish
+on:
+  push:
+    branches:
+      - master
+jobs:
+  bucket_publish:
+    env:
+      BUCKET_NAME: 'textile-js-todo-demo'
+    runs-on: ubuntu-latest
+    name: Create a Textile Bucket
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Setup
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Install
+      run: npm install
+    - name: Build
+      run: npm run build
+    - name: Bucket push action
+      id: push
+      uses: textileio/github-action-bucket-push@master
+      with:
+        bucket-name: '${{ env.BUCKET_NAME }}'
+        path: 'build/*'
+        token: ${{ secrets.TEXTILE_AUTH_TOKEN }}
+    # Use the output from the `hello` step
+    - name: Get the output CID
+      run: echo "The CID was ${{ steps.push.outputs.cid }}"
+    - name: Get the Bucket URL
+      run: echo "The Bucket URL is ${{ steps.push.outputs.url }}"

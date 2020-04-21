@@ -1,0 +1,20 @@
+name: bucket_remove
+on:
+  pull_request:
+    types: ['closed']
+
+jobs:
+  bucket_remove:
+    env:
+      BUCKET_NAME: 'textile-js-todo-demo'
+    runs-on: ubuntu-latest
+    name: Remove a Textile Bucket
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Bucket remove action
+      id: push
+      uses: textileio/github-action-bucket-remove@master
+      with:
+        bucket-name: '${{ env.BUCKET_NAME }}-${{ github.event.pull_request.id }}'
+        token: ${{ secrets.TEXTILE_AUTH_TOKEN }}
