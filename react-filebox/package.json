@@ -1,0 +1,60 @@
+{
+  "name": "threads-demo",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "3box": "^1.17.1",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "@textile/threads-core": "^0.1.2",
+    "@textile/threads-database": "^0.1.2",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.35",
+    "@types/react": "^16.9.33",
+    "@types/react-dom": "^16.9.6",
+    "buffer": "^5.5.0",
+    "datastore-level": "^0.14.1",
+    "interface-datastore": "^0.8.3",
+    "moment": "^2.24.0",
+    "prettier": "^2.0.4",
+    "pretty-bytes": "^5.3.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-dropzone": "^10.2.2",
+    "react-moment": "^0.9.7",
+    "react-scripts": "3.4.1",
+    "react-semantic-toasts": "^0.6.5",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
+    "streaming-iterables": "^4.1.2",
+    "typescript": "^3.7.5",
+    "ulid": "^2.3.0",
+    "use-debounce": "^3.4.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/datastore-level": "^0.14.0",
+    "@types/interface-datastore": "^0.8.0"
+  }
+}
