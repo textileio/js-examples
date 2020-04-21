@@ -1,13 +1,16 @@
-name: bucket_pull_request
+name: bucket_publish
 on:
-  pull_request:
+  push:
     branches:
       - master
 jobs:
-  bucket_pull_request:
+  bucket_publish:
     env:
       BUCKET_NAME: 'textile-js-todo-demo'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react-todo
     name: Create a Textile Bucket
     steps:
     - name: Checkout
@@ -24,9 +27,10 @@ jobs:
       id: push
       uses: textileio/github-action-bucket-push@master
       with:
-        bucket-name: '${{ env.BUCKET_NAME }}-${{ github.event.pull_request.id }}'
+        bucket-name: '${{ env.BUCKET_NAME }}'
         path: 'build/*'
         token: ${{ secrets.TEXTILE_AUTH_TOKEN }}
+    # Use the output from the `hello` step
     - name: Get the output CID
       run: echo "The CID was ${{ steps.push.outputs.cid }}"
     - name: Get the Bucket URL

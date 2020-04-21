@@ -8,6 +8,9 @@ jobs:
     env:
       BUCKET_NAME: 'textile-js-todo-demo'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react-todo
     name: Remove a Textile Bucket
     steps:
     - name: Checkout
