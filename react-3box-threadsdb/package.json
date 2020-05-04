@@ -30,7 +30,8 @@
     "streaming-iterables": "^4.1.2",
     "typescript": "^3.7.5",
     "ulid": "^2.3.0",
-    "use-debounce": "^3.4.1"
+    "use-debounce": "^3.4.1",
+    "use-reducer-async": "^2.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
