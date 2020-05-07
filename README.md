@@ -1,6 +1,6 @@
 # js-examples
 
-**Warning** These examples are in the process of being updated. The following list reflects demos ready to use:
+**Warning** **These examples are in the process of being updated**. The following list reflects demos ready to use:
 
 - [ ] Hello world
 - [ ] React Todo demo
