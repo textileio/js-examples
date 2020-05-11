@@ -61,7 +61,7 @@ class Tests extends React.Component {
           data.status = 2;
           tests[testNumber] = data;
           this.setState({
-            threadId: threadId.toBytes(),
+            threadId: threadId,
             tests: tests,
           });
           break;
@@ -113,7 +113,7 @@ class Tests extends React.Component {
           const r = await client.find(threadId, 'Person', q);
 
           // Update our app state with success (if we really found the instance)
-          data.status = r.instancesList[0].ID === this.state.entityId ? 2 : 9;
+          data.status = r.instancesList[0]._id === this.state.entityId ? 2 : 9;
           data.message = r.instancesList[0];
           tests[testNumber] = data;
           this.setState({
@@ -178,7 +178,7 @@ class Tests extends React.Component {
         }
       }
     }
-    this.refs.toast.show(message);
+    this.refs.toast.show(message, 2500);
   }
 
   renderRow(value) {
@@ -333,9 +333,9 @@ const personSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   title: 'Person',
   type: 'object',
-  required: ['ID'],
+  required: ['_id'],
   properties: {
-    ID: {
+    _id: {
       type: 'string',
       description: "The instance's id.",
     },
@@ -357,7 +357,7 @@ const personSchema = {
 
 const createPerson = () => {
   return {
-    ID: '',
+    _id: '',
     firstName: 'Adam',
     lastName: 'Doe',
     age: 21,
