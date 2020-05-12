@@ -32,3 +32,59 @@ You shouldn't have to "eject" this app to use the advanced features used here, b
 ## Learn More
 
 Visit Textile's [Bounty Resources Page](https://blog.textile.io/ethden-2020-textile-bounty-resources/) for more information about Getting Started.
+
+## Create a React Native App
+
+Initialize a new application
+
+```
+react-native init <app-name>
+cd <app-name>
+```
+
+**Install Nodeify**
+
+This is required as a number of dependencies require global variables like Buffer, crypto, and others.
+
+```
+npm install --save rn-nodeify
+npx react-native link
+npm install
+```
+
+**Pod Install**
+
+```
+cd ios
+pod install
+cd ..
+```
+
+**Enable streams and events**
+
+```
+npm install --save events  stream readable-stream
+```
+
+**Postinstall shim**
+
+The following postinstall script will keep your shim (for Buffer, crypto, etc) working. Add this to your `scripts` array in `package.json`.
+
+```
+  "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack"
+```
+
+And import the generated shim file (`/shim.js` in your app root directory) in your primary file, `index.js` first line.
+
+```
+import './shim';
+```
+
+
+**Bind for android**
+
+I find it helpful to have this script in my `package.json` for quickly binding the local thread daemon port if needed.
+
+```
+    "bind": "adb reverse tcp:6007 tcp:6007",
+```
