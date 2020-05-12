@@ -8,10 +8,11 @@
 
 import React from 'react';
 import {FlatList, StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import {Client, Where} from '@textile/threads-client';
+import {Client} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
 import {Context, createAPISig} from '@textile/textile';
-import { Libp2pCryptoIdentity } from '@textile/threads-core';
+import {Libp2pCryptoIdentity} from '@textile/threads-core';
+import {USER_API_SECRET, USER_API_KEY} from 'react-native-dotenv'
 
 const MAX_STEPS = 2;
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
@@ -55,8 +56,8 @@ class CheckList extends React.Component {
       switch (testNumber) {
         case 0: {
           ctx = new Context();
-          const sig = await createAPISig('secret');
-          ctx = ctx.withAPIKey('brlbyskqsntf4w52jhhvrvbdzuq').withAPISig(sig);
+          const sig = await createAPISig(USER_API_SECRET);
+          ctx = ctx.withAPIKey(USER_API_KEY).withAPISig(sig);
 
           data.status = 2;
           tests[testNumber] = data;
@@ -97,6 +98,7 @@ class CheckList extends React.Component {
           tests[testNumber] = data;
           this.setState({
             tests: tests,
+            message: ctx,
           });
           break;
         }
