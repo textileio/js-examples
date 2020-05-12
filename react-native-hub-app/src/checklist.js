@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import {FlatList, StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {FlatList, StyleSheet, View, Text, TouchableOpacity, AsyncStorage} from 'react-native';
 import {Client, Where} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
 import {Buckets, Context, createAPISig} from '@textile/textile';
@@ -15,6 +15,8 @@ import {Libp2pCryptoIdentity} from '@textile/threads-core';
 import {USER_API_SECRET, USER_API_KEY, API_URL} from 'react-native-dotenv';
 
 const MAX_STEPS = 2;
+const IDENTITY_KEY = 'identity';
+const CONTEXT_KEY = 'context';
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
 class CheckList extends React.Component {
@@ -25,14 +27,12 @@ class CheckList extends React.Component {
   // you could also do this, so no constructor needed
   state = {
     steps: [
-      {key: 'Step 0', name: 'Prepare API signature', status: 0},
-      {key: 'Step 1', name: 'Create new Identity', status: 0},
-      {key: 'Step 2', name: 'Generate an API token for user', status: 0},
-      {key: 'Step 3', name: 'Create new ThreadDB', status: 0},
-      {key: 'Step 4', name: 'Create a new Collection', status: 0},
-      {key: 'Step 5', name: 'Add data to our Collection', status: 0},
-      {key: 'Step 6', name: 'Query data from our Collection', status: 0},
-      {key: 'Step 7', name: 'Buckets', status: 0},
+      {key: 'Step 0', name: 'Prepare Identity & API Token', status: 0},
+      {key: 'Step 2', name: 'Create new ThreadDB', status: 0},
+      {key: 'Step 3', name: 'Create a new Collection', status: 0},
+      {key: 'Step 4', name: 'Add data to our Collection', status: 0},
+      {key: 'Step 5', name: 'Query data from our Collection', status: 0},
+      {key: 'Step 6', name: 'Buckets', status: 0},
     ],
     step: 0,
     errorMessage: '',
@@ -58,66 +58,69 @@ class CheckList extends React.Component {
       let {ctx, db, identity, threadId} = this.state;
       switch (stepNumber) {
         case 0: {
-          // Signs the API secret to create a new API token that will expire
-          ctx = new Context(API_URL);
-          const sig = await createAPISig(USER_API_SECRET);
-          ctx = ctx.withAPIKey(USER_API_KEY).withAPISig(sig);
+          let updatedState = {};
+          let storedContext; // = await AsyncStorage.getItem(CONTEXT_KEY);
+          if (storedContext) {
+            console.log(storedContext);
+            const ctxObj = JSON.parse(storedContext);
+            ctx = Context.fromJSON(JSON.parse(storedContext));
+            console.log(ctx);
+            const database = new Client(ctx);
+            updatedState = {
+              ctx: ctx,
+              db: database,
+            };
+          } else {
+            // Signs the API secret to create a new API token that will expire
+            ctx = new Context(API_URL);
+            const sig = await createAPISig(USER_API_SECRET);
+            ctx = ctx.withAPIKey(USER_API_KEY).withAPISig(sig);
+
+            // Create a new crypto identity for your user
+            const id = await Libp2pCryptoIdentity.fromRandom();
+
+            // The API will return a token to be used for this user
+            const database = new Client(ctx);
+            const token = await database.getToken(identity);
+
+            // We want to update our Context with the token now.
+            ctx = ctx.withToken(token);
+
+            console.log(ctx);
+
+            const ctxStr = JSON.stringify(ctx.toJSON());
+            await AsyncStorage.setItem(CONTEXT_KEY, ctxStr);
+
+            updatedState = {
+              tok: token,
+              ctx: ctx,
+              db: database,
+              identity: id,
+              steps: steps,
+            };
+          }
 
           data.status = 2;
           steps[stepNumber] = data;
-          this.setState({
-            ctx: ctx,
-            steps: steps,
-          });
+          this.setState(updatedState);
 
           break;
         }
         case 1: {
-          // Creates a random PKI identity using Libp2p
-          // Only required once per user, identity should be re-used for all future session
-          identity = await Libp2pCryptoIdentity.fromRandom();
-
-          data.status = 2;
-          steps[stepNumber] = data;
-          this.setState({
-            identity: identity,
-            steps: steps,
-          });
-          break;
-        }
-        case 2: {
-          // The API will return a token to be used for this user
-          db = new Client(ctx);
-          const tok = await db.getToken(identity);
-          // We want to update our Context with the token now.
-          ctx = ctx.withToken(tok);
-
-          // Update our app state with success
-          data.status = 2;
-          steps[stepNumber] = data;
-          this.setState({
-            tok: tok,
-            ctx: ctx,
-            db: db,
-            steps: steps,
-          });
-          break;
-        }
-        case 3: {
-          threadId = ThreadID.fromRandom();
+          const id = ThreadID.fromRandom();
           // // Update our app state with success
-          await db.newDB(threadId);
+          await db.newDB(id);
           // Update our app state with success
           data.status = 2;
           steps[stepNumber] = data;
           this.setState({
-            threadId: threadId,
+            threadId: id,
             steps: steps,
             message: ctx,
           });
           break;
         }
-        case 4: {
+        case 2: {
           // Create a new collection with the Astronaut schema below
           await db.newCollection(threadId, 'Astronaut', astronautSchema);
 
@@ -129,7 +132,7 @@ class CheckList extends React.Component {
           });
           break;
         }
-        case 5: {
+        case 3: {
           // Create a new instance of an Astronaut
           const ids = await db.create(threadId, 'Astronaut', [
             createAstronaut(),
@@ -145,7 +148,7 @@ class CheckList extends React.Component {
           });
           break;
         }
-        case 6: {
+        case 4: {
           // Search for an Instance with firstName of Buzz
           const q = new Where('firstName').eq('Buzz');
           const r = await db.find(threadId, 'Astronaut', q);
@@ -159,7 +162,17 @@ class CheckList extends React.Component {
           });
           break;
         }
-        case 7: {
+        case 5: {
+          // Store our identity and context for re-use.
+
+          data.status = 2;
+          this.setState({
+            steps: steps,
+          });
+          break;
+        }
+        case 6: {
+          console.log(ctx);
           const buckets = new Buckets(ctx);
           const roots = await buckets.list();
           console.log('roots');
@@ -192,7 +205,7 @@ class CheckList extends React.Component {
 
   async runAllSteps(stepNumber) {
     try {
-      await sleep(800); // <- just adds a delay between steps for UI looks
+      await sleep(1200); // <- just adds a delay between steps for UI looks
       this.runStep(stepNumber);
     } catch (err) {
       const steps = this.state.steps;
