@@ -8,11 +8,11 @@
 
 import React from 'react';
 import {FlatList, StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import {Client} from '@textile/threads-client';
+import {Client, Where} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
-import {Context, createAPISig} from '@textile/textile';
+import {Buckets, Context, createAPISig} from '@textile/textile';
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
-import {USER_API_SECRET, USER_API_KEY} from 'react-native-dotenv'
+import {USER_API_SECRET, USER_API_KEY, API_URL} from 'react-native-dotenv';
 
 const MAX_STEPS = 2;
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
@@ -24,156 +24,207 @@ class CheckList extends React.Component {
 
   // you could also do this, so no constructor needed
   state = {
-    test: 0,
-    tests: [
-      {key: 'Test 0', name: 'Create signature', status: 0},
-      {key: 'Test 1', name: 'Create user token', status: 0},
-      {key: 'Test 2', name: 'Create new client DB', status: 0},
-      {key: 'Test 3', name: 'pending', status: 0},
-      {key: 'Test 4', name: 'pending', status: 0},
+    steps: [
+      {key: 'Step 0', name: 'Prepare API signature', status: 0},
+      {key: 'Step 1', name: 'Create new Identity', status: 0},
+      {key: 'Step 2', name: 'Generate an API token for user', status: 0},
+      {key: 'Step 3', name: 'Create new ThreadDB', status: 0},
+      {key: 'Step 4', name: 'Create a new Collection', status: 0},
+      {key: 'Step 5', name: 'Add data to our Collection', status: 0},
+      {key: 'Step 6', name: 'Query data from our Collection', status: 0},
+      {key: 'Step 7', name: 'Buckets', status: 0},
     ],
+    step: 0,
     errorMessage: '',
   };
 
   incrementStatus(index) {
-    const tests = this.state.tests;
-    const data = tests[index];
+    const steps = this.state.steps;
+    const data = steps[index];
     if (data.status >= MAX_STEPS) {
       return;
     }
     data.status = data.status += 1;
-    tests[index] = data;
+    steps[index] = data;
     this.setState({
-      tests: tests,
+      steps: steps,
     });
   }
 
-  async test(testNumber) {
-    const tests = this.state.tests;
-    const data = tests[testNumber];
+  async runStep(stepNumber) {
+    const steps = this.state.steps;
+    const data = steps[stepNumber];
     try {
-      let {ctx, db, threadId} = this.state;
-      switch (testNumber) {
+      let {ctx, db, identity, threadId} = this.state;
+      switch (stepNumber) {
         case 0: {
-          ctx = new Context();
+          // Signs the API secret to create a new API token that will expire
+          ctx = new Context(API_URL);
           const sig = await createAPISig(USER_API_SECRET);
           ctx = ctx.withAPIKey(USER_API_KEY).withAPISig(sig);
 
           data.status = 2;
-          tests[testNumber] = data;
+          steps[stepNumber] = data;
           this.setState({
             ctx: ctx,
-            tests: tests,
+            steps: steps,
           });
 
           break;
         }
         case 1: {
-          db = new Client(ctx);
-          const identity = await Libp2pCryptoIdentity.fromRandom();
-          const tok = await db.getToken(identity);
-          ctx = ctx.withToken(tok);
+          // Creates a random PKI identity using Libp2p
+          // Only required once per user, identity should be re-used for all future session
+          identity = await Libp2pCryptoIdentity.fromRandom();
 
-          // Update our app state with success
           data.status = 2;
-          tests[testNumber] = data;
+          steps[stepNumber] = data;
           this.setState({
             identity: identity,
-            tok: tok,
-            ctx: ctx,
-            db: db,
-            tests: tests,
+            steps: steps,
           });
           break;
         }
         case 2: {
-          ctx = ctx.withThreadName('foo');
-          threadId = ThreadID.fromRandom();
-          // // Update our app state with success
-          await db.newDB(threadId, ctx);
-          // const res = await client.getThread('foo', ctx);
+          // The API will return a token to be used for this user
+          db = new Client(ctx);
+          const tok = await db.getToken(identity);
+          // We want to update our Context with the token now.
+          ctx = ctx.withToken(tok);
 
           // Update our app state with success
           data.status = 2;
-          tests[testNumber] = data;
+          steps[stepNumber] = data;
           this.setState({
-            tests: tests,
-            message: ctx,
+            tok: tok,
+            ctx: ctx,
+            db: db,
+            steps: steps,
           });
           break;
         }
         case 3: {
+          threadId = ThreadID.fromRandom();
+          // // Update our app state with success
+          await db.newDB(threadId);
           // Update our app state with success
           data.status = 2;
-          tests[testNumber] = data;
+          steps[stepNumber] = data;
           this.setState({
-            tests: tests,
+            threadId: threadId,
+            steps: steps,
+            message: ctx,
           });
           break;
         }
         case 4: {
+          // Create a new collection with the Astronaut schema below
+          await db.newCollection(threadId, 'Astronaut', astronautSchema);
+
+          // Update our app state with success
+          data.status = 2;
+          steps[stepNumber] = data;
+          this.setState({
+            steps: steps,
+          });
+          break;
+        }
+        case 5: {
+          // Create a new instance of an Astronaut
+          const ids = await db.create(threadId, 'Astronaut', [
+            createAstronaut(),
+          ]);
+
+          // Update our app state with success
+          data.status = 2;
+          steps[stepNumber] = data;
+          data.message = ids[0];
+          this.setState({
+            entityId: ids[0],
+            steps: steps,
+          });
+          break;
+        }
+        case 6: {
+          // Search for an Instance with firstName of Buzz
+          const q = new Where('firstName').eq('Buzz');
+          const r = await db.find(threadId, 'Astronaut', q);
+
           // Update our app state with success (if we really found the instance)
           data.status = r.instancesList[0]._id === this.state.entityId ? 2 : 9;
           data.message = r.instancesList[0];
-          tests[testNumber] = data;
+          steps[stepNumber] = data;
           this.setState({
-            tests: tests,
+            steps: steps,
+          });
+          break;
+        }
+        case 7: {
+          const buckets = new Buckets(ctx);
+          const roots = await buckets.list();
+          console.log('roots');
+          console.log(roots);
+
+          // Update our app state with success (if we really found the instance)
+          data.status = 2;
+          this.setState({
+            steps: steps,
           });
           break;
         }
         default:
           data.status = 9;
-          tests[testNumber] = data;
+          steps[stepNumber] = data;
           this.setState({
-            tests: tests,
+            steps: steps,
           });
           return;
       }
     } catch (err) {
       data.status = 9;
       data.message = err.message;
-      tests[testNumber] = data;
+      steps[stepNumber] = data;
       this.setState({
-        tests: tests,
+        steps: steps,
       });
     }
   }
 
-  async runTest(testNumber) {
+  async runAllSteps(stepNumber) {
     try {
-      await sleep(1500); // <- just adds a delay between tests for UI looks
-      this.test(testNumber);
+      await sleep(800); // <- just adds a delay between steps for UI looks
+      this.runStep(stepNumber);
     } catch (err) {
-      const tests = this.state.tests;
-      const data = tests[testNumber];
+      const steps = this.state.steps;
+      const data = steps[stepNumber];
       data.status = 9;
-      tests[testNumber] = data;
+      steps[stepNumber] = data;
       this.setState({
-        tests: tests,
+        steps: steps,
       });
     }
   }
 
-  showStatus(testNumber) {
-    const tests = this.state.tests;
-    const data = tests[testNumber];
+  showStatus(stepNumber) {
+    const steps = this.state.steps;
+    const data = steps[stepNumber];
     let message = JSON.stringify(data.message);
     if (!message) {
       switch (data.status) {
         case 0: {
-          message = 'test pending';
+          message = 'step pending';
           break;
         }
         case 1: {
-          message = 'test running';
+          message = 'step running';
           break;
         }
         case 2: {
-          message = 'test success';
+          message = 'step success';
           break;
         }
         default: {
-          message = 'test failed';
+          message = 'step failed';
           break;
         }
       }
@@ -183,18 +234,18 @@ class CheckList extends React.Component {
 
   renderRow(value) {
     const {item, index} = value;
-    if (item.status === 0 && this.state.test === index) {
-      this.runTest(index);
+    if (item.status === 0 && this.state.step === index) {
+      this.runAllSteps(index);
       this.incrementStatus(index);
-    } else if (item.status === 2 && this.state.test === index) {
-      this.setState({test: this.state.test + 1});
+    } else if (item.status === 2 && this.state.step === index) {
+      this.setState({step: this.state.step + 1});
     }
     const status =
       item.status === 2
         ? 'success'
         : item.status === 9
         ? 'error'
-        : this.state.test === index
+        : this.state.step === index
         ? 'running'
         : 'pending';
 
@@ -240,14 +291,12 @@ class CheckList extends React.Component {
       <View style={styles.container}>
         <FlatList
           style={styles.list}
-          data={this.state.tests}
+          data={this.state.steps}
           keyExtractor={(item) => item.key}
           renderItem={this.renderRow.bind(this)}
         />
         <View>
-          <Text style={styles.error}>
-            {this.state.errorMessage}
-          </Text>
+          <Text style={styles.error}>{this.state.errorMessage}</Text>
         </View>
       </View>
     );
@@ -323,10 +372,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const personSchema = {
-  $id: 'https://example.com/person.schema.json',
+const astronautSchema = {
+  $id: 'https://example.com/astronaut.schema.json',
   $schema: 'http://json-schema.org/draft-07/schema#',
-  title: 'Person',
+  title: 'Astronauts',
   type: 'object',
   required: ['_id'],
   properties: {
@@ -336,26 +385,26 @@ const personSchema = {
     },
     firstName: {
       type: 'string',
-      description: "The person's first name.",
+      description: "The astronaut's first name.",
     },
     lastName: {
       type: 'string',
-      description: "The person's last name.",
+      description: "The astronaut's last name.",
     },
-    age: {
-      description: 'Age in years which must be equal to or greater than zero.',
+    missions: {
+      description: 'Missions.',
       type: 'integer',
       minimum: 0,
     },
   },
 };
 
-const createPerson = () => {
+const createAstronaut = () => {
   return {
     _id: '',
-    firstName: 'Adam',
-    lastName: 'Doe',
-    age: 21,
+    firstName: 'Buzz',
+    lastName: 'Aldrin',
+    missions: 2,
   };
 };
 
