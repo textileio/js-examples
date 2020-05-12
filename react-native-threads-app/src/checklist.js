@@ -29,6 +29,7 @@ class CheckList extends React.Component {
       {key: 'Test 3', name: 'Create new Instance', status: 0},
       {key: 'Test 4', name: 'Find existing Instance', status: 0},
     ],
+    errorMessage: '',
   };
 
   incrementStatus(index) {
@@ -175,7 +176,7 @@ class CheckList extends React.Component {
         }
       }
     }
-    this.refs.toast.show(message, 2500);
+    this.setState({errorMessage: message});
   }
 
   renderRow(value) {
@@ -241,6 +242,11 @@ class CheckList extends React.Component {
           keyExtractor={(item) => item.key}
           renderItem={this.renderRow.bind(this)}
         />
+        <View>
+          <Text style={styles.error}>
+            {this.state.errorMessage}
+          </Text>
+        </View>
       </View>
     );
   }
@@ -302,6 +308,14 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     includeFontPadding: false,
     flex: 0,
+    fontSize: values.font_place_size,
+    fontFamily: values.font_body,
+  },
+  error: {
+    color: '#333',
+    flex: 0,
+    paddingTop: 24,
+    textAlign: 'center',
     fontSize: values.font_place_size,
     fontFamily: values.font_body,
   },
