@@ -9,24 +9,25 @@
 import React from 'react';
 import {
   FlatList,
-  StyleSheet,
   View,
   Text,
   TouchableOpacity,
   AsyncStorage,
   Linking,
 } from 'react-native';
+import Prompt from 'react-native-input-prompt';
 import {Client, Where} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
-import {Buckets, Context, createAPISig} from '@textile/textile';
+import {Buckets, Context} from '@textile/textile';
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
 // @ts-ignore
 import {USER_API_SECRET, USER_API_KEY, API_URL} from 'react-native-dotenv';
+import Filter from 'bad-words';
 import styles from './styles'
-import { astronautSchema, createAstronaut } from './astronauts'
+import { astronautSchema, createAstronaut, generateWebpage } from './astronauts'
 
 const MAX_STEPS = 2;
-const version = 8
+const version = 9
 const IDENTITY_KEY = 'identity-' + version;
 const CONTEXT_KEY = 'context';
 const TOKEN_KEY = 'token';
@@ -34,15 +35,20 @@ const USER_THREAD_ID = 'user_thread';
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
 interface StateProps {
-  steps: any,
-  step: number,
-  errorMessage: string,
-  identity?: string,
-  threadId?: ThreadID,
-  db?: Client,
-  entityId?: string,
+  steps: any
+  step: number
+  errorMessage: string
+  showPrompt: boolean
+  promptTitle: string
+  promptHint: string
+  identity?: string
+  threadId?: ThreadID
+  db?: Client
+  entityId?: string
+  bucketKey?: string
   bucketUrl?: string
   webUrl?: string
+  content?: string
 }
 class CheckList extends React.Component<StateProps> {
   constructor(props) {
@@ -56,10 +62,14 @@ class CheckList extends React.Component<StateProps> {
       {key: 'Step 1', name: 'Setup ThreadDB', status: 0},
       {key: 'Step 2', name: 'Add Instance to Collection', status: 0},
       {key: 'Step 3', name: 'Query from our Collection', status: 0},
-      {key: 'Step 4', name: 'Push webpage to User Bucket', status: 0},
+      {key: 'Step 4', name: 'Create a webpage', status: 0},
+      {key: 'Step 5', name: 'Push webpage to User Bucket', status: 0},
     ],
     step: 0,
     errorMessage: '',
+    showPrompt: false,
+    promptTitle: '',
+    promptHint: '',
   };
 
   incrementStatus(index: number) {
@@ -323,13 +333,34 @@ class CheckList extends React.Component<StateProps> {
            * If a Bucket named 'files' already existed for this user, use it.
            * If not, create one now.
            */
-          let targetKey = ''
+          let bucketKey = ''
           if (existing) {
-            targetKey = existing.key;
+            bucketKey = existing.key;
           } else {
             const created = await buckets.init('files');
-            targetKey = created.root.key;
+            bucketKey = created.root.key;
           }
+
+          this.setState({
+            bucketKey,
+            promptTitle: existing ? 'Update your Website' : 'Create new Website',
+            promptHint: existing ? 'Give it a new name, like "Fakeblock"' : 'Give it a name, like "Rainbows and Cupcakes"',
+            showPrompt: true,
+          });
+          break;
+        }
+        case 5: {
+          const {bucketKey} = this.state;
+          
+          /**
+           * Still using the same context.
+           */
+          const buckets = new Buckets(db.context);
+
+          /**
+           * Create a simple html string for the webpage
+           */
+          const webpage = generateWebpage(this.state.content);
 
           /**
            * Add a simple file Buffer
@@ -338,20 +369,20 @@ class CheckList extends React.Component<StateProps> {
            * 
            * We add the file as index.html so that we can render it right in the browser afterwards.
            */
-          const file = { path: '/index.html', content: Buffer.from('hello world') }
+          const file = { path: '/index.html', content: Buffer.from(webpage) }
 
           /**
            * Push the file to the root of the Files Bucket.
            */
-          await buckets.pushPath(targetKey, 'index.html', file)
+          await buckets.pushPath(bucketKey, 'index.html', file)
 
           /**
            * You can prepare a publically available link to the Bucket now.
            * 
            * Alternatively, you can create a direct webpage link.
            */
-          const bucketUrl = `https://${targetKey}.ipns.hub.textile.io`
-          const webUrl = `https://${targetKey}.textile.space`
+          const bucketUrl = `https://${bucketKey}.ipns.hub.staging.textile.io`
+          const webUrl = `https://${bucketKey}.textile.space`
           console.log(bucketUrl);
           console.log(webUrl);
           data.status = 2;
@@ -475,6 +506,41 @@ class CheckList extends React.Component<StateProps> {
     );
   }
 
+  websiteCancelled() {
+    const steps = this.state.steps;
+    const data = steps[4];
+    data.status = 9;
+    data.message = 'User cancelled'
+    steps[4] = data;
+    this.setState({
+      steps: steps,
+      showPrompt: false,
+    })
+  }
+
+  websiteNamed(content) {
+    const steps = this.state.steps;
+    const data = steps[4];
+    const filter = new Filter();
+    if (filter.isProfane(content)) {
+      data.status = 9;
+      data.message = 'Really?'
+      steps[4] = data;
+      this.setState({
+        steps: steps,
+        showPrompt: false,
+      })
+      return;
+    }
+    data.status = 2;
+    steps[4] = data;
+    this.setState({
+      steps: steps,
+      showPrompt: false,
+      content,
+    })
+  } 
+
   render() {
     return (
       <View style={styles.container}>
@@ -499,6 +565,13 @@ class CheckList extends React.Component<StateProps> {
             {this.state.bucketUrl ? 'View Bucket' : ''}
           </Text>
         </View>
+        <Prompt
+            visible={this.state.showPrompt}
+            title={this.state.promptTitle}
+            placeholder={this.state.promptHint}
+            onCancel={() => this.websiteCancelled()}
+            onSubmit={text => this.websiteNamed(text)}
+        />
       </View>
     );
   }
