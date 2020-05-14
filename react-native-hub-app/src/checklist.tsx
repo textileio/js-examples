@@ -26,7 +26,7 @@ import styles from './styles'
 import { astronautSchema, createAstronaut } from './astronauts'
 
 const MAX_STEPS = 2;
-const version = 7
+const version = 8
 const IDENTITY_KEY = 'identity-' + version;
 const CONTEXT_KEY = 'context';
 const TOKEN_KEY = 'token';
@@ -39,7 +39,6 @@ interface StateProps {
   errorMessage: string,
   identity?: string,
   threadId?: ThreadID,
-  ctx?: Context,
   db?: Client,
   entityId?: string,
   bucketUrl?: string
@@ -52,7 +51,7 @@ class CheckList extends React.Component<StateProps> {
   // you could also do this, so no constructor needed
   state: StateProps = {
     steps: [
-      {key: 'Step 0', name: 'Prepare Identity & API Token', status: 0},
+      {key: 'Step 0', name: 'Prepare Identity & Token', status: 0},
       {key: 'Step 1', name: 'Setup ThreadDB', status: 0},
       {key: 'Step 2', name: 'Add Instance to Collection', status: 0},
       {key: 'Step 3', name: 'Query from our Collection', status: 0},
@@ -120,7 +119,7 @@ class CheckList extends React.Component<StateProps> {
     }
   }
 
-  async getUserThread(id: string, db: Client, ctx: Context): Promise<ThreadID> {
+  async getUserThread(id: string, db: Client): Promise<ThreadID> {
     /**
      * All storage should be scoped to the identity
      * 
@@ -158,7 +157,7 @@ class CheckList extends React.Component<StateProps> {
     const steps = this.state.steps;
     const data = steps[stepNumber];
     try {
-      let {ctx, db, threadId} = this.state;
+      let {db, threadId} = this.state;
       switch (stepNumber) {
         case 0: {
           /**
@@ -179,13 +178,12 @@ class CheckList extends React.Component<StateProps> {
           const existingCtx = await this.getContext(identity);
           if (existingCtx) {
             db = new Client(existingCtx);
-            ctx = existingCtx;
             data.message = 'Using existing Identity'
           } else {
             /** 
              * Create a new Context (API_URL can be blank)
              */
-            ctx = new Context(API_URL);
+            const ctx = new Context(API_URL);
             
             /**
              * Authenticate the user with your User Key and Secret
@@ -215,7 +213,6 @@ class CheckList extends React.Component<StateProps> {
              * The token will be added to the existing db.context.
              */
             await this.getUserToken(id, db);
-            // ctx.withToken(token);
 
             /**
              * The Context is reusable in future app sessions, so we store it.
@@ -230,7 +227,6 @@ class CheckList extends React.Component<StateProps> {
           steps[stepNumber] = data;
           this.setState({
             identity,
-            ctx: ctx,
             db: db,
           });
 
@@ -245,7 +241,7 @@ class CheckList extends React.Component<StateProps> {
            * 
            * Here, we create or restore the user's 
            */
-          const tid = await this.getUserThread(this.state.identity, db, ctx);
+          const tid = await this.getUserThread(this.state.identity, db);
 
           /**
            * Update our context with the target threadId.
@@ -258,9 +254,7 @@ class CheckList extends React.Component<StateProps> {
           steps[stepNumber] = data;
           this.setState({
             threadId: tid,
-            ctx,
             steps: steps,
-            message: ctx,
           });
           break;
         }
@@ -316,8 +310,10 @@ class CheckList extends React.Component<StateProps> {
            * 
            * You can now create Buckets for your User.
            * Bucket will contain raw files and documents.
+           * 
+           * We'll use the same Context we setup for the ThreadsDB.
            */
-          const buckets = new Buckets(ctx);
+          const buckets = new Buckets(db.context);
 
           const roots = await buckets.list();
           const existing = roots.find((bucket) => bucket.name === 'files')
