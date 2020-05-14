@@ -27,7 +27,7 @@ import styles from './styles'
 import { astronautSchema, createAstronaut, generateWebpage } from './astronauts'
 
 const MAX_STEPS = 2;
-const version = 9
+const version = 101;
 const IDENTITY_KEY = 'identity-' + version;
 const CONTEXT_KEY = 'context';
 const TOKEN_KEY = 'token';
@@ -46,8 +46,7 @@ interface StateProps {
   db?: Client
   entityId?: string
   bucketKey?: string
-  bucketUrl?: string
-  webUrl?: string
+  ipfsAddr?: string
   content?: string
 }
 class CheckList extends React.Component<StateProps> {
@@ -374,21 +373,11 @@ class CheckList extends React.Component<StateProps> {
           /**
            * Push the file to the root of the Files Bucket.
            */
-          await buckets.pushPath(bucketKey, 'index.html', file)
-
-          /**
-           * You can prepare a publically available link to the Bucket now.
-           * 
-           * Alternatively, you can create a direct webpage link.
-           */
-          const bucketUrl = `https://${bucketKey}.ipns.hub.staging.textile.io`
-          const webUrl = `https://${bucketKey}.textile.space`
-          console.log(bucketUrl);
-          console.log(webUrl);
+          const raw = await buckets.pushPath(bucketKey, 'index.html', file)
+          
           data.status = 2;
           this.setState({
-            bucketUrl,
-            webUrl,
+            ipfsAddr: raw.root,
             steps: steps,
           });
           break;
@@ -555,14 +544,14 @@ class CheckList extends React.Component<StateProps> {
         </View>
         <View>
           <Text style={{...styles.error, ...{color: 'blue'}}}
-                onPress={() => Linking.openURL(this.state.webUrl)}>
-            {this.state.bucketUrl ? 'View Webpage' : ''}
+                onPress={() => Linking.openURL(`https://${this.state.bucketKey}.textile.space`)}>
+            {this.state.ipfsAddr ? 'IPNS Webpage Link' : ''}
           </Text>
         </View>
         <View>
           <Text style={{...styles.error, ...{color: 'blue'}}}
-                onPress={() => Linking.openURL(this.state.bucketUrl)}>
-            {this.state.bucketUrl ? 'View Bucket' : ''}
+                onPress={() => Linking.openURL(`https://${this.state.threadId}.thread.hub.textile.io/buckets/${this.state.bucketKey}`)}>
+            {this.state.ipfsAddr ? 'Thread Bucket Link' : ''}
           </Text>
         </View>
         <Prompt
