@@ -55,7 +55,7 @@ class CheckList extends React.Component<StateProps> {
       {key: 'Step 1', name: 'Setup ThreadDB', status: 0},
       {key: 'Step 2', name: 'Add Instance to Collection', status: 0},
       {key: 'Step 3', name: 'Query from our Collection', status: 0},
-      {key: 'Step 4', name: 'List existing Buckets', status: 0},
+      {key: 'Step 4', name: 'Push webpage to User Bucket', status: 0},
     ],
     step: 0,
     errorMessage: '',
