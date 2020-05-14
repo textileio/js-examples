@@ -42,6 +42,7 @@ interface StateProps {
   db?: Client,
   entityId?: string,
   bucketUrl?: string
+  webUrl?: string
 }
 class CheckList extends React.Component<StateProps> {
   constructor(props) {
@@ -349,10 +350,14 @@ class CheckList extends React.Component<StateProps> {
            * 
            * Alternatively, you can create a direct webpage link.
            */
-          const bucketUrl = `https://${targetKey}.ipns.hub.staging.textile.io`
+          const bucketUrl = `https://${targetKey}.ipns.hub.textile.io`
+          const webUrl = `https://${targetKey}.textile.space`
+          console.log(bucketUrl);
+          console.log(webUrl);
           data.status = 2;
           this.setState({
             bucketUrl,
+            webUrl,
             steps: steps,
           });
           break;
@@ -481,6 +486,12 @@ class CheckList extends React.Component<StateProps> {
         />
         <View>
           <Text style={styles.error}>{this.state.errorMessage}</Text>
+        </View>
+        <View>
+          <Text style={{...styles.error, ...{color: 'blue'}}}
+                onPress={() => Linking.openURL(this.state.webUrl)}>
+            {this.state.bucketUrl ? 'View Webpage' : ''}
+          </Text>
         </View>
         <View>
           <Text style={{...styles.error, ...{color: 'blue'}}}
