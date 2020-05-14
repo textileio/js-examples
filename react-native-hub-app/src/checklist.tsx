@@ -15,16 +15,18 @@ import {
   AsyncStorage,
   Linking,
 } from 'react-native';
+// @ts-ignore
 import Prompt from 'react-native-input-prompt';
+// @ts-ignore
+import {USER_API_SECRET, USER_API_KEY, API_URL} from 'react-native-dotenv';
+// @ts-ignore
+import Filter from 'bad-words';
 import {Client, Where} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
 import {Buckets, Context} from '@textile/textile';
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
-// @ts-ignore
-import {USER_API_SECRET, USER_API_KEY, API_URL} from 'react-native-dotenv';
-import Filter from 'bad-words';
-import styles from './styles'
-import { astronautSchema, createAstronaut, generateWebpage } from './astronauts'
+import { astronautSchema, createAstronaut, generateWebpage } from './helpers';
+import styles from './styles';
 
 const MAX_STEPS = 2;
 const version = 101;
@@ -32,7 +34,7 @@ const IDENTITY_KEY = 'identity-' + version;
 const CONTEXT_KEY = 'context';
 const TOKEN_KEY = 'token';
 const USER_THREAD_ID = 'user_thread';
-const sleep = (m) => new Promise((r) => setTimeout(r, m));
+const sleep = (m: number) => new Promise((r) => setTimeout(r, m));
 
 interface StateProps {
   steps: any
@@ -41,19 +43,15 @@ interface StateProps {
   showPrompt: boolean
   promptTitle: string
   promptHint: string
-  identity?: string
+  identity: string
+  db: Client
   threadId?: ThreadID
-  db?: Client
   entityId?: string
   bucketKey?: string
   ipfsAddr?: string
   content?: string
 }
 class CheckList extends React.Component<StateProps> {
-  constructor(props) {
-    super(props);
-  }
-
   // you could also do this, so no constructor needed
   state: StateProps = {
     steps: [
@@ -69,6 +67,8 @@ class CheckList extends React.Component<StateProps> {
     showPrompt: false,
     promptTitle: '',
     promptHint: '',
+    identity: '',
+    db: new Client(),
   };
 
   incrementStatus(index: number) {
@@ -114,7 +114,7 @@ class CheckList extends React.Component<StateProps> {
     return token;
   }
 
-  async getContext(id: string): Promise<Context> {
+  async getContext(id: string): Promise<Context | undefined> {
     const persistenceKey = `${id}-${CONTEXT_KEY}`
     // Pull the stored context to reuse if available && valid date
     let contextStr = await AsyncStorage.getItem(persistenceKey);
@@ -127,6 +127,7 @@ class CheckList extends React.Component<StateProps> {
         return ctx;
       }
     }
+    return undefined;
   }
 
   async getUserThread(id: string, db: Client): Promise<ThreadID> {
@@ -251,7 +252,7 @@ class CheckList extends React.Component<StateProps> {
            * 
            * Here, we create or restore the user's 
            */
-          const tid = await this.getUserThread(this.state.identity, db);
+          const tid = await this.getUserThread(this.state.identity!, db);
 
           /**
            * Update our context with the target threadId.
@@ -278,7 +279,7 @@ class CheckList extends React.Component<StateProps> {
            * If you run this app many times, you'll notice many Buzz Aldrin
            * entries in your ThreadDB, each with a unique ID.
            */
-          const ids = await db.create(threadId, 'Astronaut', [
+          const ids = await db.create(threadId!, 'Astronaut', [
             createAstronaut(),
           ]);
 
@@ -297,14 +298,14 @@ class CheckList extends React.Component<StateProps> {
            * You can search all your existing Buzz Aldrins
            */
           const q = new Where('firstName').eq('Buzz');
-          const r = await db.find(threadId, 'Astronaut', q);
+          const r = await db.find(threadId!, 'Astronaut', q);
 
-          const ids = r.instancesList.map((instance) => instance._id)
+          const ids = r.instancesList.map((instance: any) => instance._id)
 
           /**
            * Clean up our entries (just delete them all!)
            */
-          await db.delete(threadId, 'Astronaut', ids);
+          await db.delete(threadId!, 'Astronaut', ids);
 
           data.status = ids.indexOf(this.state.entityId) > -1 ? 2 : 9;
           data.message = `${ids.length} existing instances found`;
@@ -337,7 +338,7 @@ class CheckList extends React.Component<StateProps> {
             bucketKey = existing.key;
           } else {
             const created = await buckets.init('files');
-            bucketKey = created.root.key;
+            bucketKey = created.root!.key;
           }
 
           this.setState({
@@ -359,7 +360,7 @@ class CheckList extends React.Component<StateProps> {
           /**
            * Create a simple html string for the webpage
            */
-          const webpage = generateWebpage(this.state.content);
+          const webpage = generateWebpage(this.state.content || '');
 
           /**
            * Add a simple file Buffer
@@ -373,7 +374,7 @@ class CheckList extends React.Component<StateProps> {
           /**
            * Push the file to the root of the Files Bucket.
            */
-          const raw = await buckets.pushPath(bucketKey, 'index.html', file)
+          const raw = await buckets.pushPath(bucketKey!, 'index.html', file)
           
           data.status = 2;
           this.setState({
@@ -400,7 +401,7 @@ class CheckList extends React.Component<StateProps> {
     }
   }
 
-  async runAllSteps(stepNumber) {
+  async runAllSteps(stepNumber: number) {
     try {
       await sleep(1200); // <- just adds a delay between steps for UI looks
       this.runStep(stepNumber);
@@ -415,7 +416,7 @@ class CheckList extends React.Component<StateProps> {
     }
   }
 
-  showStatus(stepNumber) {
+  showStatus(stepNumber: number) {
     const steps = this.state.steps;
     const data = steps[stepNumber];
     let message = JSON.stringify(data.message);
@@ -441,7 +442,7 @@ class CheckList extends React.Component<StateProps> {
     }
     this.setState({errorMessage: message});
   }
-  renderRow(value) {
+  renderRow(value: any) {
     const {item, index} = value;
     if (item.status === 0 && this.state.step === index) {
       this.runAllSteps(index);
@@ -507,7 +508,7 @@ class CheckList extends React.Component<StateProps> {
     })
   }
 
-  websiteNamed(content) {
+  websiteNamed(content: string) {
     const steps = this.state.steps;
     const data = steps[4];
     const filter = new Filter();
@@ -559,7 +560,7 @@ class CheckList extends React.Component<StateProps> {
             title={this.state.promptTitle}
             placeholder={this.state.promptHint}
             onCancel={() => this.websiteCancelled()}
-            onSubmit={text => this.websiteNamed(text)}
+            onSubmit={(text: string) => this.websiteNamed(text)}
         />
       </View>
     );
