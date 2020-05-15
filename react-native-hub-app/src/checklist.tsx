@@ -29,7 +29,7 @@ import { astronautSchema, createAstronaut, generateWebpage } from './helpers';
 import styles from './styles';
 
 const MAX_STEPS = 2;
-const version = 101;
+const version = 103;
 const IDENTITY_KEY = 'identity-' + version;
 const CONTEXT_KEY = 'context';
 const TOKEN_KEY = 'token';
@@ -143,9 +143,7 @@ class CheckList extends React.Component<StateProps> {
       /**
        * Temporary hack to get ThreadID working in RN
        */
-      const temp: ThreadID = ThreadID.fromString(idStr);
-      // @ts-ignore
-      const id = ThreadID.fromBytes(Buffer.from(temp.buf));
+      const id: ThreadID = ThreadID.fromString(idStr);
       return id;
     } else {
       const id: ThreadID = ThreadID.fromRandom();
@@ -508,19 +506,13 @@ class CheckList extends React.Component<StateProps> {
     })
   }
 
-  websiteNamed(content: string) {
+  websiteNamed(title: string) {
     const steps = this.state.steps;
     const data = steps[4];
     const filter = new Filter();
+    let content = title
     if (filter.isProfane(content)) {
-      data.status = 9;
-      data.message = 'Really?'
-      steps[4] = data;
-      this.setState({
-        steps: steps,
-        showPrompt: false,
-      })
-      return;
+      content = filter.clean(content)
     }
     data.status = 2;
     steps[4] = data;
