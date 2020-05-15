@@ -35,7 +35,6 @@ If you have issues where the Android emulator cannot connect to the Threads daem
 
 This is the fix if you hit the issue `Response closed without headers` _and_ you are running `threadsd` on your local machine.
 
-
 ## Run
 
 ```
@@ -50,4 +49,3 @@ Following each install, the `postinstall` step will run to ensure the node metho
 ```
     "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack"
 ```
-
