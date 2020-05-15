@@ -200,7 +200,7 @@ class CheckList extends React.Component<StateProps> {
              * This will allow the user to store threads and buckets
              * using your developer resources on the Hub.
              */
-            ctx.withUserKey({
+            await ctx.withUserKey({
               key: USER_API_KEY,
               secret: USER_API_SECRET,
               type: 1,
