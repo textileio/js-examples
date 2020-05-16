@@ -18,7 +18,7 @@ import {
 // @ts-ignore
 import Prompt from 'react-native-input-prompt';
 // @ts-ignore
-import {USER_API_SECRET, USER_API_KEY, API_URL} from 'react-native-dotenv';
+import {USER_API_SECRET, USER_API_KEY} from 'react-native-dotenv';
 // @ts-ignore
 import Filter from 'bad-words';
 import {Client, Where} from '@textile/threads-client';
@@ -123,7 +123,7 @@ class CheckList extends React.Component<StateProps> {
       if (
         ctxJson['x-textile-api-sig-msg'] && (Date.parse(ctxJson['x-textile-api-sig-msg'])) > (new Date()).getTime()) {
         // Not expired
-        const ctx = Context.fromJSON(ctxJson, API_URL);
+        const ctx = Context.fromJSON(ctxJson);
         return ctx;
       }
     }
@@ -190,9 +190,9 @@ class CheckList extends React.Component<StateProps> {
             data.message = 'Using existing Identity'
           } else {
             /** 
-             * Create a new Context (API_URL can be blank)
+             * Create a new Context
              */
-            const ctx = new Context(API_URL);
+            const ctx = new Context();
             
             /**
              * Authenticate the user with your User Key and Secret
