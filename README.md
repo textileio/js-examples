@@ -3,8 +3,8 @@
 **Warning** **These examples are in the process of being updated**. The following list reflects demos ready to use:
 
 - [ ] Hello world
-- [ ] React Todo demo
-- [ ] React Db demo
+- [x] React Native Hub App
+- [x] React Native Threads App
 - [ ] Browser example
 - [ ] Nodejs Chat demo
 
