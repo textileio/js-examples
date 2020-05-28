@@ -1,8 +1,8 @@
-import { template } from 'lodash';
-import jdenticon from 'jdenticon';
+
 import { Client } from '@textile/textile'
 import { Context, UserAuth } from '@textile/context'
-import {Libp2pCryptoIdentity} from '@textile/threads-core';
+import {Libp2pCryptoIdentity, ThreadID} from '@textile/threads-core';
+import {displayIdentity, displayStatus, displayAvatar, displayThreadsList} from './ui'
 
 /**
  * Creates a new random keypair-based Identity
@@ -43,12 +43,12 @@ const getIdentity = (async (): Promise<Libp2pCryptoIdentity> => {
 /**
  * Optional method for using the server to do the full token generation
  */
-const getTokenRemote = async (identity: string) => {
-  const response = await fetch(`/api/login?id=${identity}`, {
+const simpleAuth = async (): Promise<UserAuth> => {
+  const response = await fetch(`/api/login`, {
     method: 'GET',
   })
-  const data = await response.json()
-  return data;
+  const userAuth = await response.json()
+  return userAuth;
 }
 
 /**
@@ -56,14 +56,14 @@ const getTokenRemote = async (identity: string) => {
  * 
  * Keeps private key locally in the app.
  */
-const getTokenWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> => {  
+const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> => {  
   return new Promise((resolve, reject) => {
     /** 
      * Configured for our development server
      * 
      * Note: this should be upgraded to wss for production environments.
      */
-    const socketUrl = `ws://localhost:3000/ws/auth`
+    const socketUrl = `ws://localhost:3000/ws/login`
     
     /** Initialize our websocket connection */
     const socket = new WebSocket(socketUrl)
@@ -113,105 +113,91 @@ const getTokenWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth
   });
 };
 
-/**
- * Display an avatar based on the user identity
- */
-const displayAvatar = (identity: string) => {
-  const outputElement = document.getElementById('identity');
-  if (outputElement) {
-    var compiled = template(`
-      <svg width="80" height="80" data-jdenticon-value="<%- identity %>"></svg>
-    `.trim());
-    outputElement.innerHTML = compiled({
-      identity,
-    });
-    /** trigger rendering */
-    jdenticon();
-  }
-}
+class Hub {
 
-/**
- * Display the identity short string
- */
-const displayIdentity = (publicKey: string) => {
-  const shortId = publicKey.substr(publicKey.length - 11, 10)
-  const outputElement = document.getElementById('publicKey');
-  if (outputElement) {
-    var compiled = template(`
-      <strong>identity:</strong> <%- shortId %>
-    `.trim());
-    outputElement.innerHTML = compiled({
-      shortId,
-    });
-  }
-}
+  /** The users unique pki identity */
+  id?: Libp2pCryptoIdentity
 
-/**
- * Notify the user that they are verified on the API
- */
-const displayTokenVerification = () => {
-  const tokenElement = document.getElementById('token');
-  if (tokenElement) {
-    tokenElement.classList.add("verified");
+  /** The Hub API authentication */
+  auth?: UserAuth
+
+  /** Hub API metadata for access control */
+  context: Context = new Context()
+
+  constructor () {}
+
+  setupIdentity = async () => {
+    /** Create or get identity */
+    this.id = await getIdentity();
+    /** Contains the full identity (including private key) */
+    const identity = this.id.toString();
+
+    /** Render our avatar */
+    displayAvatar(identity)
+
+    /** Get the public key */
+    const publicKey = this.id.public.toString();
+
+    /** Display the publicKey short ID */
+    displayIdentity(publicKey)
   }
-  /** Timeout just so the UI changes some after it loads :) */
-  setTimeout(()=> {
-    const labelElement = document.getElementById('token-label');
-    if (labelElement) {
-      labelElement.innerHTML = 'API AVAILABLE'
+
+  listThreads = async () => {
+    if (!this.auth) {
+      throw Error('User not authenticated')
     }
-  }, 800)
-}
 
-/**
- * Display any user threads created
- */
-const displayThreadsList = (threads: string) => {
-  /** Timeout just so the UI changes some after it loads :) */
-  setTimeout(() => {
-    const threadsElement = document.getElementById('threads-list');
-    if (threadsElement) {
-      threadsElement.classList.add("verified");
-      threadsElement.innerHTML = threads;
+    /** Setup a new connection with the API and our user auth */
+    const client = new Client(this.context)
+
+    /** Query for all the user's existing threads (expected none) */
+    const threads = await client.listThreads()
+
+    /** Display the results */
+    displayThreadsList(JSON.stringify(threads));
+  }
+
+  login = async () => {
+    if (!this.id) {
+      throw Error('No user ID found')
     }
-  }, 1000)
+
+    /** Use the identity to request a new API token */
+    this.auth = await loginWithChallenge(this.id);
+
+    console.log('Verified on Textile API')
+    displayStatus();
+
+    /** Store the access control metadata */
+    this.context = Context.fromUserAuth(this.auth, 'http://localhost:3007')
+  }
+
+  simpleAuth = async () => {
+    if (!this.id) {
+      throw Error('No user ID found')
+    }
+
+    /** Use the simple auth REST endpoint to get API access */
+    this.auth = await simpleAuth()
+
+
+    console.log('Verified on Textile API')
+    displayStatus();
+
+    /** Store the access control metadata */
+    this.context = Context.fromUserAuth(this.auth)
+
+    /** The simple auth endpoint doesn't provide a user's Hub API Token */
+    const client = new Client(this.context)
+    const token = await client.getToken(this.id)
+
+    /** Update our context, including the token */
+    this.auth = {
+      ...this.auth,
+      token: token,
+    }
+    this.context = Context.fromUserAuth(this.auth)
+  }
 }
 
-/**
- * Run when app launches
- */
-const main = async () => {
-  /** Create or get identity */
-  const id = await getIdentity();
-  /** Contains the full identity (including private key) */
-  const identity = id.toString();
-
-  /** Render our avatar */
-  displayAvatar(identity)
-
-  /** Get the public key */
-  const publicKey = id.public.toString();
-
-  /** Display the publicKey short ID */
-  displayIdentity(publicKey)
-
-  /** Use the identity to request a new API token */
-  const auth = await getTokenWithChallenge(id);
-
-  console.log('Verified on Textile API')
-
-  displayTokenVerification();
-
-  console.log(auth)
-  /** Setup a new connection with the API and our user auth */
-  const ctx = Context.fromUserAuth(auth)
-  const client = new Client(ctx)
-
-  /** Query for all the user's existing threads (expected none) */
-  const threads = await client.listThreads()
-
-  /** Display the results */
-  displayThreadsList(JSON.stringify(threads));
-}
-
-window.onload = main;
+(<any>window).Hub = Hub;

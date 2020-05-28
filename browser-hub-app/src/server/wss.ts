@@ -3,7 +3,17 @@ import {newClientDB, getAPISig} from "./hub"
 
 import Emittery from "emittery";
 
-const wss = route.all('/ws/auth', (ctx) => {
+/**
+ * This login includes a more thorough identity verification step.
+ * 
+ * It leverages the Hub's public key verification via challenge.
+ * The challenge is issued server-side by fulfilled here, client-side.
+ * This has several benefits.
+ * - User private key never needs to leave the user/client.
+ * - The server will leverage the Hub verification in the process of user registration.
+ * - The server can maintain a record of: user public key and user token in list of users.
+ */
+const wss = route.all('/ws/login', (ctx) => {
   /** Emittery allows us to wait for the challenge response event */
   const emitter = new Emittery();
   ctx.websocket.on('message', async (msg) => {

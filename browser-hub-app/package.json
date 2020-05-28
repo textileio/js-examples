@@ -49,6 +49,7 @@
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "copy-webpack-plugin": "^6.0.1",
+    "expose-loader": "^0.7.5",
     "lodash": "^4.17.15",
     "mocha": "^7.2.0",
     "node-dev": "^4.0.0",

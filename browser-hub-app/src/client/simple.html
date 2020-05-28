@@ -8,7 +8,7 @@
     window.onload = async () => {
       const app = new Hub();
       await app.setupIdentity();
-      await app.login();
+      await app.simpleAuth();
       await app.listThreads();
     }
   </script>
@@ -34,9 +34,9 @@
       </div>
     </div>
   </div>
-  <div class="corner-ribbon top-right">
-    <a href="./simple.html">
-      View Simple Auth
+  <div class="corner-ribbon">
+    <a href="./">
+      View Full Auth
     </a>
   </div>
   <script src="main-bundle.js"></script>
