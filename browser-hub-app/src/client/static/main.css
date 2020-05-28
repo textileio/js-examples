@@ -1,0 +1,106 @@
+html {
+  background: #333;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+body,
+input,
+button,
+textarea{
+  font-family: "Arial", sans-serif;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  text-align: center;
+  margin: 10% 0;
+  min-height: 400px;
+  align-items: center;
+}
+.status {
+  width: 25%;
+  min-width: 200px;
+  max-width: 400px;
+	margin: 30px auto 0 auto;
+	border-radius: 4px;
+	border: 1px solid #222;
+	background: #111;
+	display: flex;
+	flex-direction: column;
+}
+
+.status .id {
+	padding-top: 15px;
+	margin: 0 auto;
+  width: 100%;
+	justify-content: center;
+	align-items: center;
+	background: #202225;
+	color: #fff;
+}
+
+.status .id .avatar {
+	margin: 0 auto;
+	border-radius: 50%;
+	overflow: hidden;
+	width: 80px;
+	height: 80px;
+}
+.status .id .avatar svg {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.status .id .identity {
+	margin: 15px auto 15px auto;
+	text-align: center;
+	font-weight: 100;
+	font-size: 16px;
+}
+.status .id .identity strong {
+	color: #fff;
+}
+.status .id .identity span {
+	color: #72767d;
+	letter-spacing: -1px;
+}
+
+.status .token, .status .token {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.status .token, .status {
+	color: #72767d;
+	font-size: 18px;
+  text-align: center;
+}
+.status .token.verified {
+  color: lime;
+  -webkit-transition: all 2s;
+  -moz-transition:    all 2s;
+  -ms-transition:     all 2s;
+  -o-transition:      all 2s;
+  transition:         all 2s;
+}
+
+.status .threads .threads-header {
+	padding-bottom: 0.5rem; 
+}
+.status .threads textarea {
+	padding: 0.5rem;
+	height: 100px;
+	resize: none;
+	background: transparent;
+	border: 0;
+	color: #aaa;
+	font-size: 12px;
+	text-align: center;
+}
