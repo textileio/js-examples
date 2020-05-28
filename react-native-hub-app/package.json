@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "bind": "adb reverse tcp:6007 tcp:6007",
+    "bind": "adb reverse tcp:3007 tcp:3007",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",

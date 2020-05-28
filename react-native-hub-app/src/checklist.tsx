@@ -12,7 +12,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  AsyncStorage,
   Linking,
 } from 'react-native';
 // @ts-ignore
@@ -23,8 +22,10 @@ import {USER_API_SECRET, USER_API_KEY, TEST_USER_IDENTITY} from 'react-native-do
 import Filter from 'bad-words';
 import {Where} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
-import {Buckets, Context, Client} from '@textile/textile';
-import { createAstronaut, generateWebpage, generateIdentity, cacheContext, getContext, getUserToken, getUserThread } from './helpers';
+import {Buckets, Client} from '@textile/textile';
+import {Context} from '@textile/context';
+// import {Client} from '@textile/threads-client';
+import { createAstronaut, generateWebpage, generateIdentity, cacheContext, getCachedContext, getCachedUserToken, getCachedUserThread, cacheUserToken, cacheUserThread, astronautSchema } from './helpers';
 import styles from './styles';
 
 const MAX_STEPS = 2;
@@ -100,16 +101,15 @@ class CheckList extends React.Component<StateProps> {
            * If possible, we'll reuse an existing session. 
            * If it doesn't exist or is expired, we'll create a new one.
            */
-          const existingCtx = await getContext(identity);
+          const existingCtx = await getCachedContext(identity);
           if (existingCtx) {
             db = new Client(existingCtx);
             data.message = 'Using existing Identity'
-            console.log('Using existing Identity')
           } else {
             /** 
              * Create a new Context
              */
-            const ctx = new Context('http://localhost:3007');
+            const ctx = new Context();
             
             /**
              * Authenticate the user with your User Key and Secret
@@ -137,8 +137,16 @@ class CheckList extends React.Component<StateProps> {
              * 
              * The token will be added to the existing db.context.
              */
-            const token = await getUserToken(id, db);
-            db.context.withToken(token);
+            let token = await getCachedUserToken();
+            if (!token) {
+              /**
+               * The token will automatically be added to the DB context when running getToken
+               */
+              token = await db.getToken(id);
+              await cacheUserToken(token)
+            }
+            /** Append the token to our Context */
+            ctx.withToken(token)
 
             /**
              * The Context is reusable in future app sessions, so we store it.
@@ -167,20 +175,38 @@ class CheckList extends React.Component<StateProps> {
            * 
            * Here, we create or restore the user's 
            */
-          const tid = await getUserThread(this.state.identity!, db);
+          let threadId = await getCachedUserThread();
+
+          /**
+           * Setup a new ThreadID and Database
+           */
+          if (!threadId) {
+            threadId = ThreadID.fromRandom();
+            await cacheUserThread(threadId);
+            /**
+             * Each new ThreadID requires a `newDB` call.
+             */
+            await db.newDB(threadId)
+  
+            /** 
+             * We add our first Collection to the DB for Astronauts.
+             */
+            await db.newCollection(threadId, 'Astronaut', astronautSchema);
+          }
 
           /**
            * Update our context with the target threadId.
            */
-          db.context.withThread(tid.toString());
+          db.context.withThread(threadId.toString());
 
           // Update our app state with success
           data.status = 2;
           data.message = 'User Thread linked to Identity'
           steps[stepNumber] = data;
           this.setState({
-            threadId: tid,
-            steps: steps,
+            db,
+            threadId,
+            steps,
           });
           break;
         }
@@ -317,18 +343,8 @@ class CheckList extends React.Component<StateProps> {
   }
 
   async runAllSteps(stepNumber: number) {
-    try {
-      await sleep(1200); // <- just adds a delay between steps for UI looks
-      this.runStep(stepNumber);
-    } catch (err) {
-      const steps = this.state.steps;
-      const data = steps[stepNumber];
-      data.status = 9;
-      steps[stepNumber] = data;
-      this.setState({
-        steps: steps,
-      });
-    }
+    await sleep(1200); // <- just adds a delay between steps for UI looks
+    this.runStep(stepNumber);
   }
 
   showStatus(stepNumber: number) {
