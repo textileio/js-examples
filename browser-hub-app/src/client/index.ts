@@ -157,6 +157,14 @@ class Hub {
     displayThreadsList(JSON.stringify(threads));
   }
 
+  /**
+   * Provides a full login where
+   * - pubkey is shared with the server
+   * - identity challenge is fulfilled here, on client
+   * - hub api token is sent from the server
+   * 
+   * see index.html for example running this method
+   */
   login = async () => {
     if (!this.id) {
       throw Error('No user ID found')
@@ -172,6 +180,13 @@ class Hub {
     this.context = Context.fromUserAuth(this.auth, 'http://localhost:3007')
   }
 
+  /**
+   * Provides a basic auth where
+   * - the server doesn't care about the user identity
+   * - the server just provides user auth on any request
+   * 
+   * see simple.html for example running this method
+   */
   simpleAuth = async () => {
     if (!this.id) {
       throw Error('No user ID found')

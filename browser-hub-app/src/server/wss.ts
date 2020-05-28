@@ -1,7 +1,7 @@
 import route from "koa-route";
-import {newClientDB, getAPISig} from "./hub"
-
 import Emittery from "emittery";
+
+import {newClientDB, getAPISig} from "./hub-helpers"
 
 /**
  * This login includes a more thorough identity verification step.
