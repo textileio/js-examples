@@ -14,7 +14,6 @@
     "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack"
   },
   "dependencies": {
-    "@textile/context": "^0.4.1",
     "@textile/textile": "0.3.1",
     "@textile/threads-client": "0.5.1",
     "@textile/threads-core": "0.1.13",

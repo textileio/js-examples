@@ -1,3 +1,97 @@
+import {
+  AsyncStorage,
+} from 'react-native';
+import {Context, Client} from '@textile/textile';
+import {ThreadID} from '@textile/threads-id';
+import {Libp2pCryptoIdentity} from '@textile/threads-core';
+
+const version = 106;
+const IDENTITY_KEY = 'identity-' + version;
+const USER_THREAD_ID = 'user-thread-' + version;
+const TOKEN_KEY = 'token-' + version;
+const CONTEXT_KEY = 'context-' + version;
+
+export const cacheContext = async (ctxStr: string) => {
+  await AsyncStorage.setItem(CONTEXT_KEY, ctxStr);
+}
+
+export const getContext = async (id: string): Promise<Context | undefined> => {
+  const persistenceKey = `${id}-${CONTEXT_KEY}`
+  // Pull the stored context to reuse if available && valid date
+  let contextStr = await AsyncStorage.getItem(persistenceKey);
+  if (contextStr) {
+    const ctxJson = JSON.parse(contextStr);
+    if (
+      ctxJson['x-textile-api-sig-msg'] && (Date.parse(ctxJson['x-textile-api-sig-msg'])) > (new Date()).getTime()) {
+      // Not expired
+      const ctx = Context.fromJSON(ctxJson);
+      return ctx;
+    }
+  }
+  return undefined;
+}
+
+export const getUserToken = async (id: Libp2pCryptoIdentity, db: Client): Promise<string> => { 
+  const persistenceKey = `${id.toString()}-${TOKEN_KEY}`
+  let token = await AsyncStorage.getItem(persistenceKey);
+  if (token) {
+    /**
+     * We need to update our connection context with the existing token
+     */
+    return token;
+  }
+  /**
+   * The token will automatically be added to the DB context when running getToken
+   */
+  token = await db.getToken(id);
+  await AsyncStorage.setItem(persistenceKey, token);
+  return token;
+}
+
+export const getUserThread = async (id: string, db: Client): Promise<ThreadID> => {
+  /**
+   * All storage should be scoped to the identity
+   * 
+   * If the identity changes and you try to use an old database,
+   * it will error due to not authorized.
+   */
+  const persistenceKey = `${id}-${USER_THREAD_ID}`
+  let idStr = await AsyncStorage.getItem(persistenceKey);
+  if (idStr) {
+    /**
+     * Temporary hack to get ThreadID working in RN
+     */
+    const id: ThreadID = ThreadID.fromString(idStr);
+    return id;
+  } else {
+    const id: ThreadID = ThreadID.fromRandom();
+    await AsyncStorage.setItem(persistenceKey, id.toString());
+
+    /**
+     * Each new ThreadID requires a `newDB` call.
+     */
+    await db.newDB(id)
+
+    /** 
+     * We add our first Collection to the DB for Astronauts.
+     */
+    await db.newCollection(id, 'Astronaut', astronautSchema);
+    return id;
+  }
+}
+
+export const generateIdentity = async (): Promise<Libp2pCryptoIdentity> => {
+  let idStr = await AsyncStorage.getItem(IDENTITY_KEY);
+  if (idStr) {
+    return await Libp2pCryptoIdentity.fromString(idStr);
+  } else {
+    const id = await Libp2pCryptoIdentity.fromRandom();
+    idStr = id.toString();
+    await AsyncStorage.setItem(IDENTITY_KEY, idStr);
+    return id;
+  }
+}
+
 export const astronautSchema = {
   $id: 'https://example.com/astronaut.schema.json',
   $schema: 'http://json-schema.org/draft-07/schema#',
