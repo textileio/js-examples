@@ -3,6 +3,20 @@ import Emittery from "emittery";
 
 import {newClientDB, getAPISig} from "./hub-helpers"
 
+interface UserModel {
+  pubkey: string
+  lastSeen: Date
+}
+
+/**
+ * In a real system you might have a real user-singup flow
+ * Here, we just stub in a basic user "database".
+ * Users are added by their Public Key.
+ * Users will only be added if they prove they hold the private key.
+ * Proof is done using the Hub's built in token challenge API.
+ */
+const UserDB: {[key: string]: UserModel} = {}
+
 /**
  * This login includes a more thorough identity verification step.
  * 
@@ -61,6 +75,16 @@ const wss = route.all('/ws/login', (ctx) => {
            * The challenge was successfully completed by the client
            */
 
+          /**
+           * The user has verified they own the pubkey.
+           * Add or update the user in the user database
+           */
+
+          const user: UserModel = {
+            pubkey: data.pub,
+            lastSeen: new Date(),
+          }
+          UserDB[data.pub] = user;
 
           /** Get API authorization for the user */
           const auth = await getAPISig()

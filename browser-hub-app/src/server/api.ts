@@ -2,7 +2,7 @@
 import koa from "koa";
 import Router from "koa-router";
 
-import { getAPISig } from './hub';
+import { getAPISig } from './hub-helpers';
 
 
 /**
