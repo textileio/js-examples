@@ -23,7 +23,8 @@ import {USER_API_SECRET, USER_API_KEY} from 'react-native-dotenv';
 import Filter from 'bad-words';
 import {Client, Where} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
-import {Buckets, Context} from '@textile/textile';
+import {Buckets} from '@textile/textile';
+import {Context, ContextInterface} from '@textile/context';
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
 import { astronautSchema, createAstronaut, generateWebpage } from './helpers';
 import styles from './styles';
@@ -114,7 +115,7 @@ class CheckList extends React.Component<StateProps> {
     return token;
   }
 
-  async getContext(id: string): Promise<Context | undefined> {
+  async getContext(id: string): Promise<ContextInterface | undefined> {
     const persistenceKey = `${id}-${CONTEXT_KEY}`
     // Pull the stored context to reuse if available && valid date
     let contextStr = await AsyncStorage.getItem(persistenceKey);
@@ -255,7 +256,7 @@ class CheckList extends React.Component<StateProps> {
           /**
            * Update our context with the target threadId.
            */
-          db.context.withThread(tid);
+          db.context.withThread(tid.toString());
 
           // Update our app state with success
           data.status = 2;
