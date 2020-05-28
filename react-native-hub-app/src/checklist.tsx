@@ -22,9 +22,7 @@ import {USER_API_SECRET, USER_API_KEY} from 'react-native-dotenv';
 import Filter from 'bad-words';
 import {Where} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
-import {Buckets, Client} from '@textile/textile';
-import {Context} from '@textile/context';
-// import {Client} from '@textile/threads-client';
+import {Buckets, Client, Context} from '@textile/textile';
 import { createAstronaut, generateWebpage, generateIdentity, cacheContext, getCachedContext, getCachedUserToken, getCachedUserThread, cacheUserToken, cacheUserThread, astronautSchema } from './helpers';
 import styles from './styles';
 
