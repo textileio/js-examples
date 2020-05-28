@@ -17,7 +17,7 @@ import {
 // @ts-ignore
 import Prompt from 'react-native-input-prompt';
 // @ts-ignore
-import {USER_API_SECRET, USER_API_KEY, TEST_USER_IDENTITY} from 'react-native-dotenv';
+import {USER_API_SECRET, USER_API_KEY} from 'react-native-dotenv';
 // @ts-ignore
 import Filter from 'bad-words';
 import {Where} from '@textile/threads-client';
