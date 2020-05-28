@@ -4,18 +4,20 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "bind": "adb reverse tcp:6007 tcp:6007",
+    "bind": "adb reverse tcp:3007 tcp:3007",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
+    "textile:check": "npx ncu '/^@textile/.*$/'",
+    "textile:update": "npx ncu -u '/^@textile/.*$/'",
     "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack"
   },
   "dependencies": {
-    "@textile/textile": "0.1.4",
-    "@textile/threads-client": "0.3.2",
-    "@textile/threads-core": "0.1.8",
-    "@textile/threads-id": "0.0.7",
+    "@textile/textile": "0.3.1",
+    "@textile/threads-client": "0.5.1",
+    "@textile/threads-core": "0.1.13",
+    "@textile/threads-id": "0.1.1",
     "bad-words": "^3.0.3",
     "buffer": "^4.9.2",
     "events": "^3.1.0",
@@ -47,6 +49,7 @@
     "eslint-import-resolver-typescript": "^2.0.0",
     "jest": "^26.0.1",
     "metro-react-native-babel-preset": "^0.59.0",
+    "npm-check-updates": "^6.0.1",
     "react-test-renderer": "16.11.0",
     "typescript": "^3.9.2"
   },

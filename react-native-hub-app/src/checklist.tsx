@@ -12,7 +12,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  AsyncStorage,
   Linking,
 } from 'react-native';
 // @ts-ignore
@@ -21,19 +20,13 @@ import Prompt from 'react-native-input-prompt';
 import {USER_API_SECRET, USER_API_KEY} from 'react-native-dotenv';
 // @ts-ignore
 import Filter from 'bad-words';
-import {Client, Where} from '@textile/threads-client';
+import {Where} from '@textile/threads-client';
 import {ThreadID} from '@textile/threads-id';
-import {Buckets, Context} from '@textile/textile';
-import {Libp2pCryptoIdentity} from '@textile/threads-core';
-import { astronautSchema, createAstronaut, generateWebpage } from './helpers';
+import {Buckets, Client, Context} from '@textile/textile';
+import { createAstronaut, generateWebpage, generateIdentity, cacheContext, getCachedContext, getCachedUserToken, getCachedUserThread, cacheUserToken, cacheUserThread, astronautSchema } from './helpers';
 import styles from './styles';
 
 const MAX_STEPS = 2;
-const version = 103;
-const IDENTITY_KEY = 'identity-' + version;
-const CONTEXT_KEY = 'context';
-const TOKEN_KEY = 'token';
-const USER_THREAD_ID = 'user_thread';
 const sleep = (m: number) => new Promise((r) => setTimeout(r, m));
 
 interface StateProps {
@@ -84,84 +77,6 @@ class CheckList extends React.Component<StateProps> {
     });
   }
 
-  async generateIdentity(): Promise<Libp2pCryptoIdentity> {
-    let idStr = await AsyncStorage.getItem(IDENTITY_KEY);
-    if (idStr) {
-      return await Libp2pCryptoIdentity.fromString(idStr);
-    } else {
-      const id = await Libp2pCryptoIdentity.fromRandom();
-      idStr = id.toString();
-      await AsyncStorage.setItem(IDENTITY_KEY, idStr);
-      return id;
-    }
-  }
-
-  async getUserToken(id: Libp2pCryptoIdentity, db: Client): Promise<string> { 
-    const persistenceKey = `${id.toString()}-${TOKEN_KEY}`
-    let token = await AsyncStorage.getItem(persistenceKey);
-    if (token) {
-      /**
-       * We need to update our connection context with the exising token
-       */
-      db.context.withToken(token);
-      return token;
-    }
-    /**
-     * The token will automatically be added to the DB context when running getToken
-     */
-    token = await db.getToken(id);
-    await AsyncStorage.setItem(persistenceKey, token);
-    return token;
-  }
-
-  async getContext(id: string): Promise<Context | undefined> {
-    const persistenceKey = `${id}-${CONTEXT_KEY}`
-    // Pull the stored context to reuse if available && valid date
-    let contextStr = await AsyncStorage.getItem(persistenceKey);
-    if (contextStr) {
-      const ctxJson = JSON.parse(contextStr);
-      if (
-        ctxJson['x-textile-api-sig-msg'] && (Date.parse(ctxJson['x-textile-api-sig-msg'])) > (new Date()).getTime()) {
-        // Not expired
-        const ctx = Context.fromJSON(ctxJson);
-        return ctx;
-      }
-    }
-    return undefined;
-  }
-
-  async getUserThread(id: string, db: Client): Promise<ThreadID> {
-    /**
-     * All storage should be scoped to the identity
-     * 
-     * If the identity changes and you try to use an old database,
-     * it will error due to not authorized.
-     */
-    const persistenceKey = `${id}-${USER_THREAD_ID}`
-    let idStr = await AsyncStorage.getItem(persistenceKey);
-    if (idStr) {
-      /**
-       * Temporary hack to get ThreadID working in RN
-       */
-      const id: ThreadID = ThreadID.fromString(idStr);
-      return id;
-    } else {
-      const id: ThreadID = ThreadID.fromRandom();
-      await AsyncStorage.setItem(persistenceKey, id.toString());
-
-      /**
-       * Each new ThreadID requires a `newDB` call.
-       */
-      await db.newDB(id)
-
-      /** 
-       * We add our first Collection to the DB for Astronauts.
-       */
-      await db.newCollection(id, 'Astronaut', astronautSchema);
-      return id;
-    }
-  }
-
   async runStep(stepNumber: number) {
     const steps = this.state.steps;
     const data = steps[stepNumber];
@@ -175,7 +90,7 @@ class CheckList extends React.Component<StateProps> {
            * The identity pk will be cached in AsyncStorage.
            * On the next session, the pk identity will be reused
            */
-          const id = await this.generateIdentity();
+          const id = await generateIdentity();
           const identity = id.toString();
           
           /**
@@ -184,7 +99,7 @@ class CheckList extends React.Component<StateProps> {
            * If possible, we'll reuse an existing session. 
            * If it doesn't exist or is expired, we'll create a new one.
            */
-          const existingCtx = await this.getContext(identity);
+          const existingCtx = await getCachedContext(identity);
           if (existingCtx) {
             db = new Client(existingCtx);
             data.message = 'Using existing Identity'
@@ -212,7 +127,6 @@ class CheckList extends React.Component<StateProps> {
              * API calls will now include the credentials created above
              */
             db = new Client(ctx);
-
             /**
              * Generate an app user API token
              * 
@@ -221,13 +135,22 @@ class CheckList extends React.Component<StateProps> {
              * 
              * The token will be added to the existing db.context.
              */
-            await this.getUserToken(id, db);
+            let token = await getCachedUserToken();
+            if (!token) {
+              /**
+               * The token will automatically be added to the DB context when running getToken
+               */
+              token = await db.getToken(id);
+              await cacheUserToken(token)
+            }
+            /** Append the token to our Context */
+            ctx.withToken(token)
 
             /**
              * The Context is reusable in future app sessions, so we store it.
              */
             const ctxStr = JSON.stringify(ctx.toJSON());
-            await AsyncStorage.setItem(CONTEXT_KEY, ctxStr);
+            await cacheContext(ctxStr)
 
             data.message = 'Created new Identity'
           }
@@ -250,20 +173,38 @@ class CheckList extends React.Component<StateProps> {
            * 
            * Here, we create or restore the user's 
            */
-          const tid = await this.getUserThread(this.state.identity!, db);
+          let threadId = await getCachedUserThread();
+
+          /**
+           * Setup a new ThreadID and Database
+           */
+          if (!threadId) {
+            threadId = ThreadID.fromRandom();
+            await cacheUserThread(threadId);
+            /**
+             * Each new ThreadID requires a `newDB` call.
+             */
+            await db.newDB(threadId)
+  
+            /** 
+             * We add our first Collection to the DB for Astronauts.
+             */
+            await db.newCollection(threadId, 'Astronaut', astronautSchema);
+          }
 
           /**
            * Update our context with the target threadId.
            */
-          db.context.withThread(tid);
+          db.context.withThread(threadId.toString());
 
           // Update our app state with success
           data.status = 2;
           data.message = 'User Thread linked to Identity'
           steps[stepNumber] = data;
           this.setState({
-            threadId: tid,
-            steps: steps,
+            db,
+            threadId,
+            steps,
           });
           break;
         }
@@ -400,18 +341,8 @@ class CheckList extends React.Component<StateProps> {
   }
 
   async runAllSteps(stepNumber: number) {
-    try {
-      await sleep(1200); // <- just adds a delay between steps for UI looks
-      this.runStep(stepNumber);
-    } catch (err) {
-      const steps = this.state.steps;
-      const data = steps[stepNumber];
-      data.status = 9;
-      steps[stepNumber] = data;
-      this.setState({
-        steps: steps,
-      });
-    }
+    await sleep(1200); // <- just adds a delay between steps for UI looks
+    this.runStep(stepNumber);
   }
 
   showStatus(stepNumber: number) {
