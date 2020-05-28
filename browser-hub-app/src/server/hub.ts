@@ -18,7 +18,8 @@ export const getAPISig = async (seconds: number = 300) => {
  * see @textile/context
  */
 export const newContext = async () => {
-  const apiCtx = new Context(process.env.API);
+  /** You can typically just init without any parameters */
+  const apiCtx = new Context(process.env.API || null);
   await apiCtx.withUserKey({
     key: process.env.USER_API_KEY,
     secret: process.env.USER_API_SECRET,

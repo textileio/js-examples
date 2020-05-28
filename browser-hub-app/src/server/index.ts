@@ -18,7 +18,6 @@ import api from "./api";
 dotenv.config();
 
 if (
-    !process.env.API ||
     !process.env.USER_API_KEY ||
     !process.env.USER_API_SECRET
 ) {
