@@ -1,6 +1,4 @@
-import {Client} from '@textile/textile';
-import {Context, createAPISig} from '@textile/context';
-
+import {Client, Context, createAPISig} from '@textile/textile';
 
 /**
  * Get API Sig and Message

@@ -1,7 +1,6 @@
 
-import { Client } from '@textile/textile'
-import { Context, UserAuth } from '@textile/context'
-import {Libp2pCryptoIdentity, ThreadID} from '@textile/threads-core';
+import { Client, Context, UserAuth } from '@textile/textile'
+import {Libp2pCryptoIdentity} from '@textile/threads-core';
 import {displayIdentity, displayStatus, displayAvatar, displayThreadsList} from './ui'
 
 /**
@@ -41,10 +40,10 @@ const getIdentity = (async (): Promise<Libp2pCryptoIdentity> => {
 });
 
 /**
- * Optional method for using the server to do the full token generation
+ * Method for using the server to create credentials without identity
  */
-const simpleAuth = async (): Promise<UserAuth> => {
-  const response = await fetch(`/api/login`, {
+const createCredentials = async (): Promise<UserAuth> => {
+  const response = await fetch(`/api/credentials`, {
     method: 'GET',
   })
   const userAuth = await response.json()
@@ -75,7 +74,7 @@ const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> =
 
       /** Send a new token request */
       socket.send(JSON.stringify({
-        pub: publicKey,
+        pubkey: publicKey,
         type: 'token'
       })); 
 
@@ -97,8 +96,7 @@ const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> =
             /** Send the signed challenge back to the server */
             socket.send(JSON.stringify({
               type: 'challenge',
-              sig: signed.toJSON(),
-              pub: publicKey
+              sig: signed.toJSON()
             })); 
             break;
           }
@@ -193,7 +191,7 @@ class Hub {
     }
 
     /** Use the simple auth REST endpoint to get API access */
-    this.auth = await simpleAuth()
+    this.auth = await createCredentials()
 
 
     console.log('Verified on Textile API')

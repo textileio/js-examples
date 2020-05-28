@@ -19,18 +19,18 @@ const api = new Router({
  * 
  * This endpoint will provide authorization for _any_ user.
  */
-api.get( '/login', async (ctx: koa.Context, next: () => Promise<any>) => {
+api.get( '/credentials', async (ctx: koa.Context, next: () => Promise<any>) => {
   /** Get API authorization for the user */
   const auth = await getAPISig()
 
   /** Include the token in the auth payload */
-  const payload = {
+  const credentials = {
     ...auth,
     key: process.env.USER_API_KEY,
   };
   
   /** Return the auth in a JSON object */
-  ctx.body = payload
+  ctx.body = credentials
   
   await next();
 });

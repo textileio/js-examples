@@ -38,7 +38,7 @@ const wss = route.all('/ws/login', (ctx) => {
         /** The first type is a new token request */
         case 'token': {
           /** A new token request will contain the user's public key */
-          if (!data.pub) { throw new Error('missing public key (pub)') }
+          if (!data.pubkey) { throw new Error('missing pubkey') }
 
           /** 
            * Init new Hub API Client 
@@ -49,7 +49,7 @@ const wss = route.all('/ws/login', (ctx) => {
 
           /** Request a token from the Hub based on the user public key */
           const token = await db.getTokenChallenge(
-            data.pub, 
+            data.pubkey, 
             /** The callback passes the challenge back to the client */
             (challenge: Buffer) => {
             return new Promise((resolve, reject) => {
@@ -79,7 +79,6 @@ const wss = route.all('/ws/login', (ctx) => {
            * The user has verified they own the pubkey.
            * Add or update the user in the user database
            */
-
           const user: UserModel = {
             pubkey: data.pub,
             lastSeen: new Date(),
