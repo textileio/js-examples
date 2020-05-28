@@ -22,7 +22,7 @@ const api = new Router({
  * 
  * Takes a request parameter of 'id' that should be the string identity
  */
-api.get( '/auth', async (ctx: koa.Context, next: () => Promise<any>) => {
+api.get( '/login', async (ctx: koa.Context, next: () => Promise<any>) => {
   /** Identity provided as the 'id' parameter in the request */
   const {id} = ctx.query
   /** Generate a Libp2pCryptoIdentity from the string  */

@@ -44,7 +44,7 @@ const getIdentity = (async (): Promise<Libp2pCryptoIdentity> => {
  * Optional method for using the server to do the full token generation
  */
 const getTokenRemote = async (identity: string) => {
-  const response = await fetch(`/api/auth?id=${identity}`, {
+  const response = await fetch(`/api/login?id=${identity}`, {
     method: 'GET',
   })
   const data = await response.json()
