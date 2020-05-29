@@ -16,7 +16,7 @@ Create a `.env` file in the root of your project. Ensure you never check this fi
 cp example.env .env
 ```
 
-Then replace the `USER_API_KEY` and `USER_API_SECRET` values with those you create using the Textile Hub and your own account or org.
+Then replace the `USER_API_KEY` and `USER_API_SECRET` values with those you create using the Textile Hub and your own account or org (see [docs.textile.io](https://docs.textile.io) for details).
 
 ## Run
 

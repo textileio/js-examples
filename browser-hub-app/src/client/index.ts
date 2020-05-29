@@ -175,7 +175,7 @@ class Hub {
     displayStatus();
 
     /** Store the access control metadata */
-    this.context = Context.fromUserAuth(this.auth, 'http://localhost:3007')
+    this.context = Context.fromUserAuth(this.auth)
   }
 
   /**
