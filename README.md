@@ -5,7 +5,7 @@
 - [ ] Hello world
 - [x] React Native Hub App
 - [x] React Native Threads App
-- [ ] Browser example
+- [x] Browser example with API Auth Provider
 - [ ] Nodejs Chat demo
 
 > Examples and demos using Textile's Javascript/Typescript libraries and clients.
