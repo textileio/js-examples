@@ -261,7 +261,7 @@ class CheckList extends React.Component<StateProps> {
            * You can now create Buckets for your User.
            * Bucket will contain raw files and documents.
            * 
-           * We'll use the same Context we setup for the ThreadsDB.
+           * We'll use the same Context we setup for the ThreadDB.
            */
           const buckets = new Buckets(db.context);
 
