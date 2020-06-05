@@ -1,7 +1,9 @@
 
-import { Client, Context, UserAuth } from '@textile/textile'
+import { Client, UserAuth } from '@textile/hub'
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
 import {displayIdentity, displayStatus, displayAvatar, displayThreadsList} from './ui'
+
+const API = (true) ? 'http://localhost:3007' : undefined
 
 /**
  * Creates a new random keypair-based Identity
@@ -43,7 +45,7 @@ const getIdentity = (async (): Promise<Libp2pCryptoIdentity> => {
  * Method for using the server to create credentials without identity
  */
 const createCredentials = async (): Promise<UserAuth> => {
-  const response = await fetch(`/api/credentials`, {
+  const response = await fetch(`/api/userAuth`, {
     method: 'GET',
   })
   const userAuth = await response.json()
@@ -62,7 +64,7 @@ const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> =
      * 
      * Note: this should be upgraded to wss for production environments.
      */
-    const socketUrl = `ws://localhost:3000/ws/login`
+    const socketUrl = `ws://localhost:3000/ws/userAuth`
     
     /** Initialize our websocket connection */
     const socket = new WebSocket(socketUrl)
@@ -119,9 +121,6 @@ class Hub {
   /** The Hub API authentication */
   auth?: UserAuth
 
-  /** Hub API metadata for access control */
-  context: Context = new Context()
-
   constructor () {}
 
   setupIdentity = async () => {
@@ -146,7 +145,7 @@ class Hub {
     }
 
     /** Setup a new connection with the API and our user auth */
-    const client = new Client(this.context)
+    const client = Client.withUserAuth(this.auth, API)
 
     /** Query for all the user's existing threads (expected none) */
     const threads = await client.listThreads()
@@ -173,9 +172,6 @@ class Hub {
 
     console.log('Verified on Textile API')
     displayStatus();
-
-    /** Store the access control metadata */
-    this.context = Context.fromUserAuth(this.auth)
   }
 
   /**
@@ -197,19 +193,15 @@ class Hub {
     console.log('Verified on Textile API')
     displayStatus();
 
-    /** Store the access control metadata */
-    this.context = Context.fromUserAuth(this.auth)
-
-    /** The simple auth endpoint doesn't provide a user's Hub API Token */
-    const client = new Client(this.context)
+    /** The simple auth endpoint generates a user's Hub API Token */
+    const client = Client.withUserAuth(this.auth, API)
     const token = await client.getToken(this.id)
 
-    /** Update our context, including the token */
+    /** Update our auth to include the token */
     this.auth = {
       ...this.auth,
       token: token,
     }
-    this.context = Context.fromUserAuth(this.auth)
   }
 }
 

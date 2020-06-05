@@ -1,7 +1,7 @@
-import {Client, Context, createAPISig} from '@textile/textile';
+import {createAPISig, Client} from '@textile/hub';
 
 /**
- * Get API Sig and Message
+ * getAPISig uses helper function to create a new sig
  * 
  * seconds (300) time until the sig expires
  */
@@ -11,28 +11,16 @@ export const getAPISig = async (seconds: number = 300) => {
 }
 
 /**
- * newContext creates a Context containing API access control attributes
- * 
- * see @textile/context
- */
-export const newContext = async () => {
-  /** You can typically just init without any parameters */
-  const apiCtx = new Context(process.env.API || null);
-  await apiCtx.withUserKey({
-    key: process.env.USER_API_KEY,
-    secret: process.env.USER_API_SECRET,
-    type: 0,
-  })
-  return apiCtx
-}
-
-/**
- * newDB creates a Client (remote DB) connection to the Hub
+ * newClientDB creates a Client (remote DB) connection to the Hub
  * 
  * A Hub connection is required to use the getToken API
  */
 export const newClientDB = async () => {
-  const ctx = await newContext();
-  const db = new Client(ctx);
+  const API = process.env.API || undefined
+  const db = await Client.withUserKey({
+    key: process.env.USER_API_KEY,
+    secret: process.env.USER_API_SECRET,
+    type: 0,
+  }, API)
   return db;
 }
