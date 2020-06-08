@@ -45,7 +45,7 @@ const getIdentity = (async (): Promise<Libp2pCryptoIdentity> => {
  * Method for using the server to create credentials without identity
  */
 const createCredentials = async (): Promise<UserAuth> => {
-  const response = await fetch(`/api/userAuth`, {
+  const response = await fetch(`/api/userauth`, {
     method: 'GET',
   })
   const userAuth = await response.json()
@@ -64,7 +64,7 @@ const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> =
      * 
      * Note: this should be upgraded to wss for production environments.
      */
-    const socketUrl = `ws://localhost:3000/ws/userAuth`
+    const socketUrl = `ws://localhost:3000/ws/userauth`
     
     /** Initialize our websocket connection */
     const socket = new WebSocket(socketUrl)
@@ -94,11 +94,11 @@ const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> =
             /** Convert the challenge json to a Buffer */
             const buf = Buffer.from(data.value)
             /** User our identity to sign the challenge */
-            const signed = await id.sign(buf)
+            const credentials = await id.sign(buf)
             /** Send the signed challenge back to the server */
             socket.send(JSON.stringify({
               type: 'challenge',
-              sig: signed.toJSON()
+              sig: credentials.toJSON()
             })); 
             break;
           }

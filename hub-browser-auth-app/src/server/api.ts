@@ -20,7 +20,7 @@ const api = new Router({
  * 
  * This endpoint will provide authorization for _any_ user.
  */
-api.get( '/userAuth', async (ctx: koa.Context, next: () => Promise<any>) => {
+api.get( '/userauth', async (ctx: koa.Context, next: () => Promise<any>) => {
   /** Get API authorization for the user */
   const auth = await getAPISig()
 

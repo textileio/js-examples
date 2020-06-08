@@ -28,7 +28,7 @@ const UserDB: {[key: string]: UserModel} = {}
  * - The server will leverage the Hub verification in the process of user registration.
  * - The server can maintain a record of: user public key and user token in list of users.
  */
-const wss = route.all('/ws/userAuth', (ctx) => {
+const wss = route.all('/ws/userauth', (ctx) => {
   /** Emittery allows us to wait for the challenge response event */
   const emitter = new Emittery();
   ctx.websocket.on('message', async (msg) => {
