@@ -21,9 +21,8 @@ import {USER_API_SECRET, USER_API_KEY} from 'react-native-dotenv';
 // @ts-ignore
 import Filter from 'bad-words';
 import {Where} from '@textile/threads-client';
-import {ThreadID} from '@textile/threads-id';
-import {Buckets, Client, Context} from '@textile/textile';
-import { createAstronaut, generateWebpage, generateIdentity, cacheContext, getCachedContext, getCachedUserToken, getCachedUserThread, cacheUserToken, cacheUserThread, astronautSchema } from './helpers';
+import {Buckets, Client, KeyInfo, ThreadID} from '@textile/hub';
+import {createAstronaut, generateWebpage, generateIdentity, getCachedUserThread, cacheUserThread, astronautSchema} from './helpers';
 import styles from './styles';
 
 const MAX_STEPS = 2;
@@ -92,68 +91,36 @@ class CheckList extends React.Component<StateProps> {
            */
           const id = await generateIdentity();
           const identity = id.toString();
-          
+        
           /**
-           * Context contains the token and session information
+           * Authenticate the user with your User Key and Secret
            * 
-           * If possible, we'll reuse an existing session. 
-           * If it doesn't exist or is expired, we'll create a new one.
+           * This will allow the user to store threads and buckets
+           * using your developer resources on the Hub.
            */
-          const existingCtx = await getCachedContext(identity);
-          if (existingCtx) {
-            db = new Client(existingCtx);
-            data.message = 'Using existing Identity'
-          } else {
-            /** 
-             * Create a new Context
-             */
-            const ctx = new Context();
-            
-            /**
-             * Authenticate the user with your User Key and Secret
-             * 
-             * This will allow the user to store threads and buckets
-             * using your developer resources on the Hub.
-             */
-            await ctx.withUserKey({
-              key: USER_API_KEY,
-              secret: USER_API_SECRET,
-              type: 1,
-            })
-
-            /**
-             * Update our Database context
-             * 
-             * API calls will now include the credentials created above
-             */
-            db = new Client(ctx);
-            /**
-             * Generate an app user API token
-             * 
-             * The app user (defined by Identity) needs an API token
-             * The API will give you one based on ID plus Credentials
-             * 
-             * The token will be added to the existing db.context.
-             */
-            let token = await getCachedUserToken();
-            if (!token) {
-              /**
-               * The token will automatically be added to the DB context when running getToken
-               */
-              token = await db.getToken(id);
-              await cacheUserToken(token)
-            }
-            /** Append the token to our Context */
-            ctx.withToken(token)
-
-            /**
-             * The Context is reusable in future app sessions, so we store it.
-             */
-            const ctxStr = JSON.stringify(ctx.toJSON());
-            await cacheContext(ctxStr)
-
-            data.message = 'Created new Identity'
+          const info: KeyInfo = {
+            key: USER_API_KEY,
+            secret: USER_API_SECRET,
+            type: 1,
           }
+
+          /**
+           * Auth our Database with admin info
+           * 
+           * API calls will now include the credentials created above
+           */
+          db = await Client.withUserKey(info)
+          /**
+           * Generate an app user API token
+           * 
+           * The app user (defined by Identity) needs an API token
+           * The API will give you one based on ID plus Credentials
+           * 
+           * The token will be added to the existing db.context.
+           */
+          await db.getToken(id);
+
+          data.message = 'Created new Identity'
 
           data.status = 2;
           steps[stepNumber] = data;
