@@ -16,13 +16,13 @@
     "build:server": "tsc -p src/server/",
     "build": "run-s clean build:server build:client",
     "textile:check": "npx ncu '/^@textile/.*$/'",
-    "textile:upgrade": "npx ncu -u '/^@textile/.*$/'"
+    "textile:update": "npx ncu -u '/^@textile/.*$/'"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@textile/hub": "^0.1.2",
+    "@textile/hub": "^0.1.3",
     "@textile/threads-core": "^0.1.15",
     "dotenv": "^8.2.0",
     "emittery": "^0.7.0",
