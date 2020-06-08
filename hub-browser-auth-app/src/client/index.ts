@@ -64,7 +64,7 @@ const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> =
      * 
      * Note: this should be upgraded to wss for production environments.
      */
-    const socketUrl = `ws://localhost:3000/ws/userauth`
+    const socketUrl = `ws://localhost:3001/ws/userauth`
     
     /** Initialize our websocket connection */
     const socket = new WebSocket(socketUrl)
@@ -113,7 +113,7 @@ const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> =
   });
 };
 
-class Hub {
+class HubClient {
 
   /** The users unique pki identity */
   id?: Libp2pCryptoIdentity
@@ -148,10 +148,10 @@ class Hub {
     const client = Client.withUserAuth(this.auth, API)
 
     /** Query for all the user's existing threads (expected none) */
-    const threads = await client.listThreads()
+    const result = await client.listThreads()
 
     /** Display the results */
-    displayThreadsList(JSON.stringify(threads));
+    displayThreadsList(JSON.stringify(result.listList));
   }
 
   /**
@@ -205,4 +205,4 @@ class Hub {
   }
 }
 
-(<any>window).Hub = Hub;
+(<any>window).HubClient = HubClient;

@@ -50,7 +50,7 @@ npm run watch
 npm run dev:serve
 ```
 
-Visit the app at [http://localhost:3000](http://localhost:3000).
+Visit the app at [http://localhost:3001](http://localhost:3001).
 
 ### Clean
 
