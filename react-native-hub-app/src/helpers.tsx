@@ -1,7 +1,7 @@
 import {
   AsyncStorage,
 } from 'react-native';
-import {ThreadID} from '@textile/threads-id';
+import {ThreadID} from '@textile/hub';
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
 
 const version = 10000 //Math.floor(Math.random() * 1000);
