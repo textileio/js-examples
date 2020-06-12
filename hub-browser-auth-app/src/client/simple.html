@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="static/main.css">
   <script>
     window.onload = async () => {
-      const app = new Hub();
+      const app = new HubClient();
       await app.setupIdentity();
       await app.simpleAuth();
       await app.listThreads();

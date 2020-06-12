@@ -16,10 +16,8 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, 'src/client/index.html'),
-        },
-        {
-          from: path.resolve(__dirname, 'src/client/simple.html'),
+          from: '*.html',
+          context: path.resolve(__dirname, 'src', 'client')
         },
         {
           from: path.resolve(__dirname, 'src/client/static'),

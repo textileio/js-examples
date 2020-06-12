@@ -1,6 +1,7 @@
 /** Import our server libraries */
 import koa from "koa";
 import Router from "koa-router";
+import {UserAuth} from "@textile/hub"
 
 import { getAPISig } from './hub-helpers';
 
@@ -19,12 +20,12 @@ const api = new Router({
  * 
  * This endpoint will provide authorization for _any_ user.
  */
-api.get( '/credentials', async (ctx: koa.Context, next: () => Promise<any>) => {
+api.get( '/userauth', async (ctx: koa.Context, next: () => Promise<any>) => {
   /** Get API authorization for the user */
   const auth = await getAPISig()
 
   /** Include the token in the auth payload */
-  const credentials = {
+  const credentials: UserAuth = {
     ...auth,
     key: process.env.USER_API_KEY,
   };
