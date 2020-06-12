@@ -109,7 +109,7 @@ class CheckList extends React.Component<StateProps> {
            * 
            * API calls will now include the credentials created above
            */
-          db = await Client.withUserKey(info)
+          db = await Client.withKeyInfo(info)
           /**
            * Generate an app user API token
            * 

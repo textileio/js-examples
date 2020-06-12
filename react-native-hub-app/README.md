@@ -31,7 +31,7 @@ The app should display a series of Tests directly in the UI, those tests should 
 
 ### `npm run bind`
 
-If you have issues where the Android emulator cannot connect to the Threads daemon, run `npm run bind` which is the equivalent to `adb reverse tcp:6007 tcp:6007`.
+If you have issues where the Android emulator cannot connect to the Threads daemon, run `npm run bind` which is the equivalent to `adb reverse tcp:3007 tcp:3007`.
 
 This is the fix if you hit the issue `Response closed without headers` _and_ you are running `threadsd` on your local machine.
 

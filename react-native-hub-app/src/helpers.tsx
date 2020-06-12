@@ -4,7 +4,7 @@ import {
 import {ThreadID} from '@textile/hub';
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
 
-const version = 10000 //Math.floor(Math.random() * 1000);
+const version = 10001 //Math.floor(Math.random() * 1000);
 const IDENTITY_KEY = 'identity-' + version;
 const USER_THREAD_ID = 'user-thread-' + version;
 
