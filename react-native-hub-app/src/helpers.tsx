@@ -1,50 +1,12 @@
 import {
   AsyncStorage,
 } from 'react-native';
-import {Context} from '@textile/textile';
-import {ThreadID} from '@textile/threads-id';
+import {ThreadID} from '@textile/hub';
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
 
-const version = 10000 //Math.floor(Math.random() * 1000);
+const version = 10001 //Math.floor(Math.random() * 1000);
 const IDENTITY_KEY = 'identity-' + version;
 const USER_THREAD_ID = 'user-thread-' + version;
-const TOKEN_KEY = 'token-' + version;
-const CONTEXT_KEY = 'context-' + version;
-
-export const cacheContext = async (ctxStr: string) => {
-  await AsyncStorage.setItem(CONTEXT_KEY, ctxStr);
-}
-
-export const getCachedContext = async (id: string): Promise<Context | undefined> => {
-  const persistenceKey = `${id}-${CONTEXT_KEY}`
-  // Pull the stored context to reuse if available && valid date
-  let contextStr = await AsyncStorage.getItem(persistenceKey);
-  if (contextStr) {
-    const ctxJson = JSON.parse(contextStr);
-    if (
-      ctxJson['x-textile-api-sig-msg'] && (Date.parse(ctxJson['x-textile-api-sig-msg'])) > (new Date()).getTime()) {
-      // Not expired
-      const ctx = Context.fromJSON(ctxJson);
-      return ctx;
-    }
-  }
-  return undefined;
-}
-
-export const cacheUserToken = async (token: string) => {
-  await AsyncStorage.setItem(TOKEN_KEY, token);
-}
-
-export const getCachedUserToken = async (): Promise<string | undefined> => { 
-  let token = await AsyncStorage.getItem(TOKEN_KEY);
-  if (token) {
-    /**
-     * We need to update our connection context with the existing token
-     */
-    return token;
-  }
-  return undefined;
-}
 
 export const cacheUserThread = async (id: ThreadID) => {
   await AsyncStorage.setItem(USER_THREAD_ID, id.toString());

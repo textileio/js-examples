@@ -10,14 +10,13 @@
     "test": "jest",
     "lint": "eslint .",
     "textile:check": "npx ncu '/^@textile/.*$/'",
-    "textile:update": "npx ncu -u '/^@textile/.*$/'",
+    "textile:upgrade": "npx ncu -u '/^@textile/.*$/'",
     "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack"
   },
   "dependencies": {
-    "@textile/textile": "0.3.1",
-    "@textile/threads-client": "0.5.1",
-    "@textile/threads-core": "0.1.13",
-    "@textile/threads-id": "0.1.1",
+    "@textile/hub": "^0.1.4",
+    "@textile/threads-client": "0.6.7",
+    "@textile/threads-core": "0.1.18",
     "bad-words": "^3.0.3",
     "buffer": "^4.9.2",
     "events": "^3.1.0",
