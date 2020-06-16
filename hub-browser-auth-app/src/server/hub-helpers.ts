@@ -17,7 +17,7 @@ export const getAPISig = async (seconds: number = 300) => {
  */
 export const newClientDB = async () => {
   const API = process.env.API || undefined
-  const db = await Client.withUserKey({
+  const db = await Client.withKeyInfo({
     key: process.env.USER_API_KEY,
     secret: process.env.USER_API_SECRET,
     type: 0,
