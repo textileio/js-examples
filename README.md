@@ -9,8 +9,7 @@ Please open all issues on [textileio/js-textile](https://github.com/textileio/js
 **Warning** **These examples are in the process of being updated**. The following list reflects demos ready to use:
 
 - [ ] Hello world
-- [x] React Native Hub App
-- [x] React Native Threads App
+- [x] React Native Hub App (Threads & Buckets)
 - [x] Browser example with API Auth Provider
 - [ ] Nodejs Chat demo
 
