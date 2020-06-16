@@ -3,7 +3,7 @@ import { Client, UserAuth } from '@textile/hub'
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
 import {displayIdentity, displayStatus, displayAvatar, displayThreadsList} from './ui'
 
-const API = (true) ? 'http://localhost:3007' : undefined
+const API = (false) ? 'http://localhost:3007' : undefined
 
 /**
  * Creates a new random keypair-based Identity
