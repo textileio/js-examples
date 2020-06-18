@@ -1,13 +1,11 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native'
 
 const values = {
-  font_place_size: 14,
-  font_time_size: 10,
-  small_icon_size: 30,
-  font_temp_size: 12,
-};
+  fontPlaceSize: 14,
+  fontTimeSize: 10,
+  smallIconSize: 30,
+  fontTempSize: 12,
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -35,37 +33,37 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginBottom: 6,
   },
-  row_cell_timeplace: {
+  rowCellTimeplace: {
     flex: 1,
     flexDirection: 'column',
   },
-  row_cell_temp: {
+  rowCellTemp: {
     color: '#777',
     paddingHorizontal: 16,
     flex: 0,
-    fontSize: values.font_temp_size,
+    fontSize: values.fontTempSize,
   },
-  row_time: {
+  rowTime: {
     color: '#777',
     textAlignVertical: 'bottom',
     includeFontPadding: false,
     flex: 0,
-    fontSize: values.font_time_size,
+    fontSize: values.fontTimeSize,
   },
-  row_name: {
+  rowName: {
     color: '#333',
     textAlignVertical: 'top',
     includeFontPadding: false,
     flex: 0,
-    fontSize: values.font_place_size,
+    fontSize: values.fontPlaceSize,
   },
   error: {
     color: '#333',
     flex: 0,
     paddingTop: 24,
     textAlign: 'center',
-    fontSize: values.font_place_size,
+    fontSize: values.fontPlaceSize,
   },
-});
+})
 
-export default styles;
+export default styles

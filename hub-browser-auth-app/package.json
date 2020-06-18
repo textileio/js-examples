@@ -22,8 +22,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@textile/hub": "^0.1.4",
-    "@textile/threads-core": "^0.1.18",
+    "@koa/cors": "^3.1.0",
+    "@textile/hub": "^0.1.7",
+    "@textile/threads-core": "^0.1.24",
     "dotenv": "^8.2.0",
     "emittery": "^0.7.0",
     "isomorphic-ws": "^4.0.1",

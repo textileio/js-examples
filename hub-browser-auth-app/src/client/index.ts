@@ -94,11 +94,11 @@ const loginWithChallenge = async (id: Libp2pCryptoIdentity): Promise<UserAuth> =
             /** Convert the challenge json to a Buffer */
             const buf = Buffer.from(data.value)
             /** User our identity to sign the challenge */
-            const credentials = await id.sign(buf)
+            const signed = await id.sign(buf)
             /** Send the signed challenge back to the server */
             socket.send(JSON.stringify({
               type: 'challenge',
-              sig: credentials.toJSON()
+              sig: Buffer.from(signed).toJSON()
             })); 
             break;
           }
