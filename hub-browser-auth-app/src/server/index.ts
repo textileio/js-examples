@@ -8,6 +8,7 @@ import json from "koa-json";
 import bodyParser from "koa-bodyparser";
 import serve from "koa-static";
 import websockify from "koa-websocket";
+import cors from "@koa/cors";
 
 import { createReadStream } from 'fs';
 import dotenv from "dotenv";
@@ -32,6 +33,9 @@ const app = websockify(new koa());
 app.use( json() );
 app.use( logger() );
 app.use( bodyParser() );
+
+/* Not safe in production */
+app.use(cors());
 
 app.use(serve(__dirname + '/../client'));
 
