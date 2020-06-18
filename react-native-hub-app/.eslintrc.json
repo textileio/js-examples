@@ -32,6 +32,7 @@
     "@typescript-eslint/explicit-member-accessibility": 0,
     "@typescript-eslint/no-unused-vars": [0, {"argsIgnorePattern": "^_"}],
     "no-undefined": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
     "default-case": 0,
     "import/no-absolute-path": 2,
     "import/no-cycle": 1,
@@ -41,6 +42,6 @@
     "import/first": 2,
     "import/order": 2,
     "import/newline-after-import": 2,
-    "import/no-default-export": 2
+    "import/no-default-export": 0
   }
 }
