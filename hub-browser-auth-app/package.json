@@ -9,7 +9,7 @@
     "build:server": "tsc -p src/server/",
     "start:server": "node-dev --respawn dist/server/index.js",
     "watch:server": "tsc -p src/server/ -w",
-    "dev:basic": "webpack --config=webpack.basic.js --watch",
+    "dev:basic": "npm run build:basic && webpack --config=webpack.basic.js --watch",
     "build:basic": "webpack --config=webpack.basic.js",
     "textile:check": "npx ncu '/^@textile/.*$/'",
     "textile:upgrade": "npx ncu -u '/^@textile/.*$/'"

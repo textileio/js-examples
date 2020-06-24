@@ -44,6 +44,12 @@ The examples here are organized such that there are multiple available applicati
 
 ### Basic user auth example
 
+In this example, you can see how to create a basic user auth flow:
+
+* the user is defined by a simple keypair created in the browser on demand.
+* the user is then granted access to the developer's hub resources through the use of API keys.
+* the user can then access their own thread APIs to begin creating threads and buckets.
+
 The client code is available in `src/basic`.
 
 #### Watch
