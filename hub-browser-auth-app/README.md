@@ -18,15 +18,13 @@ cp example.env .env
 
 Then replace the `USER_API_KEY` and `USER_API_SECRET` values with those you create using the Textile Hub and your own account or org (see [docs.textile.io](https://docs.textile.io) for details).
 
-## Run
-
-### Setup
+## Setup
 
 ```bash
 npm install
 ```
 
-### Build
+### Build all examples
 
 The Server and Client code will be written to folders in `dist/`
 
@@ -34,26 +32,34 @@ The Server and Client code will be written to folders in `dist/`
 npm run build
 ```
 
-### Develop
-
-Watch changes in Server/Client and rebuild dist. Start the server from `dist/server`.
-
-**Terminal 1**
-
-```bash
-npm run watch
-```
-
-**Terminal 2**
-
-```bash
-npm run dev:serve
-```
-
-Visit the app at [http://localhost:3001](http://localhost:3001).
-
 ### Clean
 
 ```bash
 npm run clean
 ```
+
+## Running examples
+
+The examples here are organized such that there are multiple available application examples that each use the same single server example. In the default configuration, you can only run one app example at a time.
+
+### Basic user auth example
+
+The client code is available in `src/basic`.
+
+#### Watch
+
+You can run the server and client in development mode by opening two terminal windows. 
+
+**Terminal 1: watch the client code**
+
+```bash
+npm run dev:basic
+```
+
+**Terminal 2: start the dev server**
+
+```bash
+npm run dev:server
+```
+
+You can now view the example at [localhost:3001](http://localhost:3001).
