@@ -52,20 +52,43 @@ In this example, you can see how to create a basic user auth flow:
 
 The client code is available in `src/basic`.
 
-#### Watch
+#### Build & serve
 
 You can run the server and client in development mode by opening two terminal windows. 
 
 **Terminal 1: watch the client code**
 
 ```bash
-npm run dev:basic
+npm run start:basic
 ```
 
 **Terminal 2: start the dev server**
 
 ```bash
-npm run dev:server
+npm run start:server
 ```
 
 You can now view the example at [localhost:3001](http://localhost:3001).
+
+### Dropzone bucket example
+
+This example will build upon the auth example above. Here, you'll create a new user and then give them an interface to upload files to their own bucket.
+
+Unlike the simple auth example, the client application here is a React app. Therefore, a completely new project is contained in the client source code, available in `src/dropzone`. You need to start both our existing `server` and the react app. `dropzone/src/setupProxy.js` will tell the react app to use the server as its backend.
+
+#### Build & serve
+
+**Terminal 1: start the dev server**
+
+```bash
+npm run start:server
+```
+
+**Terminal 2: start the react app**
+
+```bash
+npm run install:dropzone
+npm run start:dropzone
+```
+
+The server will be running on [localhost:3001](http://localhost:3001) but your browser should automatically launch to the react app running on [localhost:3001](http://localhost:3001).

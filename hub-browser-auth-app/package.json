@@ -5,12 +5,15 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf dist",
-    "dev:server": "npm run build:server && run-p watch:server start:server",
+    "start:server": "npm run build:server && run-p watch:server dev:server",
     "build:server": "tsc -p src/server/",
-    "start:server": "node-dev --respawn dist/server/index.js",
+    "dev:server": "node-dev --respawn dist/server/index.js",
     "watch:server": "tsc -p src/server/ -w",
     "dev:basic": "npm run build:basic && webpack --config=webpack.basic.js --watch",
     "build:basic": "webpack --config=webpack.basic.js",
+    "start:dropzone": "cd src/dropzone && SKIP_PREFLIGHT_CHECK=true npm run start",
+    "build:dropzone": "cd src/dropzone && SKIP_PREFLIGHT_CHECK=true npm run build",
+    "install:dropzone": "cd src/dropzone && npm install",
     "textile:check": "npx ncu '/^@textile/.*$/'",
     "textile:upgrade": "npx ncu -u '/^@textile/.*$/'"
   },
@@ -57,7 +60,7 @@
     "ts-node-dev": "^1.0.0-pre.44",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
     "typescript": "^3.9.3",
-    "webpack": "^4.43.0",
+    "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11"
   }
 }
