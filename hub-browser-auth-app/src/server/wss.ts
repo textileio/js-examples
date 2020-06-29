@@ -52,12 +52,12 @@ const wss = route.all('/ws/userauth', (ctx) => {
           const token = await db.getTokenChallenge(
             data.pubkey, 
             /** The callback passes the challenge back to the client */
-            (challenge: Buffer) => {
+            (challenge: UInt8Array) => {
             return new Promise((resolve, reject) => {
               /** Pass the challenge to the client */
               ctx.websocket.send(JSON.stringify({
                 type: 'challenge',
-                value: challenge.toJSON(),
+                value: Buffer.from(challenge).toJSON(),
               }))
               /** Wait for the challenge event from our event emitter */
               emitter.on('challenge', (sig) => {
