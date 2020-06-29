@@ -2,57 +2,21 @@ import React from 'react';
 import Avatar from './Avatar';
 import Photos from './Photos';
 
+import "semantic-ui-css/semantic.min.css";
 import Dropzone from 'react-dropzone'
 // @ts-ignore
 import browserImageSize from 'browser-image-size'
 // @ts-ignore
 import { readAndCompressImage } from 'browser-image-resizer'
-import { Buckets, Client, ThreadID, UserAuth, PushPathResult } from '@textile/hub'
+import { Buckets, PushPathResult } from '@textile/hub'
 import { Libp2pCryptoIdentity, Identity } from '@textile/threads-core';
-import "semantic-ui-css/semantic.min.css";
 import { Button, Header, Segment } from "semantic-ui-react";
 
+import {PhotoSample, Photo, GalleryIndex, AppState} from './Types'
 import './App.css';
-import { PhotoProps, GalleryI } from 'react-photo-gallery';
 
-// const API = 'https://api.textile.io:443'
-const API = 'http://localhost:3007'
+const API = 'https://api.textile.io:443'
 
-interface PhotoSample {
-  cid: string
-  name: string
-  path: string
-  width: number
-  height: number
-}
-interface Photo {
-  date: number
-  name: string
-  original: PhotoSample
-  preview: PhotoSample
-  thumb: PhotoSample
-}
-
-interface GalleryIndex {
-  author: string
-  date: number
-  paths: string[]
-}
-
-interface AppState {
-  metadata: Array<Photo>
-  photos: Array<PhotoProps>
-  index: GalleryIndex
-  isLoading: boolean
-  isDragActive: boolean
-  identity?: Identity
-  userAuth?: UserAuth
-  buckets?: Buckets
-  bucketKey?: string
-  www?: string
-  url?: string
-  ipns?: string
-}
 
 class App extends React.Component {
   state: AppState = {
