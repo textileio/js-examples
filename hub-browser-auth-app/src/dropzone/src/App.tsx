@@ -17,7 +17,6 @@ import './App.css';
 
 const API = 'https://api.textile.io:443'
 
-
 class App extends React.Component {
   state: AppState = {
     metadata: [],
@@ -31,6 +30,7 @@ class App extends React.Component {
     }
   }
   async componentDidMount() {
+    // Clear your user during development
     // await localStorage.clear()
     const identity = await this.getIdentity()
     // you might want to do the I18N setup here
@@ -256,7 +256,7 @@ class App extends React.Component {
         photos: [
           ...this.state.photos,
           {
-            src:`https://ipfs.io/ipfs/${photo.cid}`,
+            src:`https://${photo.cid}.ipfs.hub.textile.io`,
             width: photo.width,
             height: photo.height,
             key: photo.name,
@@ -379,7 +379,7 @@ class App extends React.Component {
       photos: [
         ...this.state.photos,
         {
-          src:`https://ipfs.io/ipfs/${photo.cid}`,
+          src:`https://${photo.cid}.ipfs.hub.textile.io`,
           width: photo.width,
           height: photo.height,
           key: photo.name,
