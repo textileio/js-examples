@@ -239,10 +239,8 @@ class CheckList extends React.Component<StateProps> {
 
           this.setState({
             bucketKey,
-            promptTitle: existing ? 'Update your Website' : 'Create new Website',
-            promptHint: existing
-              ? 'Give it a new name, like "Fakeblock"'
-              : 'Give it a name, like "Rainbows and Cupcakes"',
+            promptTitle: 'Publish your Website',
+            promptHint: 'Give it a new name, like "Fakeblock"',
             showPrompt: true,
           })
           break
