@@ -15,8 +15,6 @@ import { Button, Header, Segment } from "semantic-ui-react";
 import {PhotoSample, Photo, GalleryIndex, AppState} from './Types'
 import './App.css';
 
-const API = 'https://api.textile.io:443'
-
 class App extends React.Component {
   state: AppState = {
     metadata: [],
@@ -166,7 +164,7 @@ class App extends React.Component {
     if (!this.state.userAuth) {
       throw new Error('Missing user auth')
     }
-    const buckets = await Buckets.withUserAuth(this.state.userAuth, API)
+    const buckets = await Buckets.withUserAuth(this.state.userAuth)
     const root = await buckets.open('io.textile.dropzone')
     if (!root) {
       throw new Error('Failed to open bucket')
