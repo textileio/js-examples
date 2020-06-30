@@ -1,5 +1,5 @@
 html {
-  background: #333;
+  background: #fff;
   -webkit-font-smoothing: antialiased !important;
 }
 
@@ -20,6 +20,7 @@ textarea{
   margin: 10% 0;
   min-height: 400px;
   align-items: center;
+	color: #514E4C;
 }
 .status {
   width: 25%;
@@ -27,8 +28,8 @@ textarea{
   max-width: 400px;
 	margin: 30px auto 0 auto;
 	border-radius: 4px;
-	border: 1px solid #222;
-	background: #111;
+	border: 1px solid #E8E8E8;
+	background: #fff;
 	display: flex;
 	flex-direction: column;
 }
@@ -39,8 +40,8 @@ textarea{
   width: 100%;
 	justify-content: center;
 	align-items: center;
-	background: #202225;
-	color: #fff;
+	background: #F7F7F7;
+	color: #2B2825;
 }
 
 .status .id .avatar {
@@ -59,14 +60,13 @@ textarea{
 .status .id .identity {
 	margin: 15px auto 15px auto;
 	text-align: center;
-	font-weight: 100;
+	font-weight: 500;
 	font-size: 16px;
 }
 .status .id .identity strong {
-	color: #fff;
+	font-weight: 100;
 }
 .status .id .identity span {
-	color: #72767d;
 	letter-spacing: -1px;
 }
 
@@ -78,12 +78,14 @@ textarea{
   flex-direction: column;
 }
 .status .token, .status {
-	color: #72767d;
 	font-size: 18px;
   text-align: center;
 }
+.status .token {
+	color: #aaa;
+}
 .status .token.verified {
-  color: lime;
+	color: #514E4C;
   -webkit-transition: all 2s;
   -moz-transition:    all 2s;
   -ms-transition:     all 2s;
@@ -107,7 +109,8 @@ textarea{
 
 .corner-ribbon {
   width: 200px;
-  background: #555;
+	background: #F7F7F7;
+	border: 1px solid #ececec;
   position: absolute;
   top: 25px;
   left: -50px;
@@ -128,5 +131,5 @@ textarea{
 }
 .corner-ribbon a {
 	text-decoration: none;
-	color: white;
+	color: gray;
 };

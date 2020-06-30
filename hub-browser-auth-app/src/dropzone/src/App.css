@@ -1,0 +1,72 @@
+.App .nav {
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #333;
+  justify-content: center;
+}
+
+.App .avatar {
+  background: none;
+  border-radius: 5px;
+  width: 45px; height: 45px;
+  background: #f3f3f3;
+  display: flex; 
+  justify-content: center;
+  align-content: center;
+}
+
+.App button.link {
+  border-radius: 5px;
+  height: 45px;
+  display: block; 
+  align-items: center; 
+  justify-content: center;
+  background: none;
+  cursor: pointer;
+  color: #8f95ff;
+  font-size: 12px;
+  outline: 0;
+}
+
+.App .avatar svg {
+  width: 45px; height: 45px;
+}
+
+.App .rendering {
+  opacity: 0.1
+}
+
+.App .dropzone-container {
+  border-radius: 5px;
+  width: 155px; height: 45px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-around;
+  background: #f3f3f3;
+  cursor: pointer;
+  outline: 0;
+}
+
+.App .dropzone-container .dropzone {
+  outline: 0;
+}
+.App .dropzone-container .dropzone span {
+  vertical-align: middle;
+  margin-right: 10px;
+  font-size: 10px;
+  font-weight: 100;
+  color: #bbb;
+}
+
+.App .dropzone-container:hover {
+  background: #ddd;
+}
+
+.App .dropzone-container .icon{
+  background: none;
+  color: #8f95ff;
+  outline: 0;
+}
+.App .dropzone-container .icon:hover{
+  background: none;
+}

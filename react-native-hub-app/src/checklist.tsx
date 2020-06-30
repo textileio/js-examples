@@ -15,7 +15,7 @@ import { USER_API_SECRET, USER_API_KEY } from 'react-native-dotenv'
 // @ts-ignore
 import Filter from 'bad-words'
 import { Where } from '@textile/threads-client'
-import { Buckets, Client, KeyInfo, ThreadID } from '@textile/hub'
+import { Buckets, Client, KeyInfo, ThreadID  } from '@textile/hub'
 import {
   createAstronaut,
   generateWebpage,
@@ -227,31 +227,20 @@ class CheckList extends React.Component<StateProps> {
            * You can now create Buckets for your User.
            * Bucket will contain raw files and documents.
            *
-           * We'll use the same Context we setup for the ThreadDB.
+           * We'll use the same session we already setup for the ThreadDB.
            */
-          const buckets = new Buckets(db.context)
+          const buckets = await Buckets.fromClient(db)
 
-          const roots = await buckets.list()
-          const existing = roots.find((bucket) => bucket.name === 'files')
-
-          /**
-           * If a Bucket named 'files' already existed for this user, use it.
-           * If not, create one now.
-           */
-          let bucketKey = ''
-          if (existing) {
-            bucketKey = existing.key
-          } else {
-            const created = await buckets.init('files')
-            bucketKey = created.root!.key
+          const root = await buckets.open('files')
+          if (!root) {
+            throw new Error('Error opening bucket')
           }
+          const bucketKey = root.key
 
           this.setState({
             bucketKey,
-            promptTitle: existing ? 'Update your Website' : 'Create new Website',
-            promptHint: existing
-              ? 'Give it a new name, like "Fakeblock"'
-              : 'Give it a name, like "Rainbows and Cupcakes"',
+            promptTitle: 'Publish your Website',
+            promptHint: 'Give it a new name, like "Fakeblock"',
             showPrompt: true,
           })
           break
