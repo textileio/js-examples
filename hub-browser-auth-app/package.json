@@ -14,6 +14,9 @@
     "start:dropzone": "cd src/dropzone && SKIP_PREFLIGHT_CHECK=true npm run start",
     "build:dropzone": "cd src/dropzone && SKIP_PREFLIGHT_CHECK=true npm run build",
     "install:dropzone": "cd src/dropzone && npm install",
+    "start:3box": "cd src/3box && SKIP_PREFLIGHT_CHECK=true npm run start",
+    "build:3box": "cd src/3box && SKIP_PREFLIGHT_CHECK=true npm run build",
+    "install:3box": "cd src/3box && npm install",
     "textile:check": "npx ncu '/^@textile/.*$/'",
     "textile:upgrade": "npx ncu -u '/^@textile/.*$/'"
   },
