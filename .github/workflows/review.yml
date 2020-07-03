@@ -76,7 +76,7 @@ jobs:
            node-version: 12
        - name: Install
          working-directory: ./react-native-hub-app
-         run: npm run install
+         run: npm install
        - name: Show versions
          working-directory: ./react-native-hub-app
          run: npm run textile:check
