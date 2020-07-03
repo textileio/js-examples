@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "install:all": "npm install && npm run install:dropzone",
     "clean": "rimraf dist",
     "start:server": "npm run build:server && run-p watch:server dev:server",
     "build:server": "tsc -p src/server/",
@@ -14,16 +15,16 @@
     "start:dropzone": "cd src/dropzone && SKIP_PREFLIGHT_CHECK=true npm run start",
     "build:dropzone": "cd src/dropzone && SKIP_PREFLIGHT_CHECK=true npm run build",
     "install:dropzone": "cd src/dropzone && npm install",
-    "textile:check": "npx ncu '/^@textile/.*$/'",
-    "textile:upgrade": "npx ncu -u '/^@textile/.*$/'"
+    "textile:check": "npx ncu '/^@textile/.*$/' && cd src/dropzone && npx ncu '/^@textile/.*$/'",
+    "textile:upgrade": "npx ncu -u '/^@textile/.*$/' && cd src/dropzone && npx ncu -u '/^@textile/.*$/'"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^3.1.0",
-    "@textile/hub": "^0.1.7",
-    "@textile/threads-core": "^0.1.24",
+    "@textile/hub": "^0.2.2",
+    "@textile/threads-core": "^0.1.30",
     "dotenv": "^8.2.0",
     "emittery": "^0.7.0",
     "isomorphic-ws": "^4.0.1",

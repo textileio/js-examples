@@ -8,7 +8,7 @@ import Dropzone from 'react-dropzone'
 import browserImageSize from 'browser-image-size'
 // @ts-ignore
 import { readAndCompressImage } from 'browser-image-resizer'
-import { Buckets, PushPathResult } from '@textile/hub'
+import { Buckets, PushPathResult, UserAuth } from '@textile/hub'
 import { Libp2pCryptoIdentity, Identity } from '@textile/threads-core';
 import { Button, Header, Segment } from "semantic-ui-react";
 
@@ -34,12 +34,6 @@ class App extends React.Component {
     // you might want to do the I18N setup here
     this.setState({ 
       identity: identity
-    })
-
-    // authorize user with the hub
-    const userAuth = await this.loginWithChallenge(identity)
-    this.setState({ 
-      userAuth: userAuth
     })
 
     // get their photo bucket
@@ -94,77 +88,15 @@ class App extends React.Component {
   }
 
   /**
-   * loginWithChallenge uses websocket to initiate and respond to
-   * a challenge for the user based on their keypair.
-   * 
-   * Read more about setting up user verification here:
-   * https://docs.textile.io/tutorials/hub/web-app/
-   */
-  loginWithChallenge = async (id: Identity) => {  
-    return new Promise((resolve, reject) => {
-      /** 
-       * Configured for our development server
-       * 
-       * Note: this should be upgraded to wss for production environments.
-       */
-      const socketUrl = `ws://localhost:3001/ws/userauth`
-      
-      /** Initialize our websocket connection */
-      const socket = new WebSocket(socketUrl)
-  
-      /** Wait for our socket to open successfully */
-      socket.onopen = () => {
-        /** Get public key string */
-        const publicKey = id.public.toString();
-  
-        /** Send a new token request */
-        socket.send(JSON.stringify({
-          pubkey: publicKey,
-          type: 'token'
-        })); 
-  
-        /** Listen for messages from the server */
-        socket.onmessage = async (event) => {
-          const data = JSON.parse(event.data)
-          switch (data.type) {
-            /** Error never happen :) */
-            case 'error': {
-              reject(data.value);
-              break;
-            }
-            /** The server issued a new challenge */
-            case 'challenge':{
-              /** Convert the challenge json to a Buffer */
-              const buf = Buffer.from(data.value)
-              /** User our identity to sign the challenge */
-              const signed = await id.sign(buf)
-              /** Send the signed challenge back to the server */
-              socket.send(JSON.stringify({
-                type: 'challenge',
-                sig: Buffer.from(signed).toJSON()
-              })); 
-              break;
-            }
-            /** New token generated */
-            case 'token': {
-              resolve(data.value)
-              break;
-            }
-          }
-        }
-      }
-    });
-  }
-
-  /**
    * getBucketKey will create a new Buckets client with the UserAuth
    * and then open our custom bucket named, 'io.textile.dropzone'
    */
   getBucketKey = async () => {
-    if (!this.state.userAuth) {
-      throw new Error('Missing user auth')
+    if (!this.state.identity) {
+      throw new Error('Identity not set')
     }
-    const buckets = await Buckets.withUserAuth(this.state.userAuth)
+    const authCallback = loginWithChallenge(this.state.identity)
+    const buckets = await Buckets.withUserAuth(authCallback)
     const root = await buckets.open('io.textile.dropzone')
     if (!root) {
       throw new Error('Failed to open bucket')
@@ -462,6 +394,72 @@ class App extends React.Component {
         </Segment.Group>
       </div>
     )
+  }
+}
+
+
+/**
+ * loginWithChallenge uses websocket to initiate and respond to
+ * a challenge for the user based on their keypair.
+ * 
+ * Read more about setting up user verification here:
+ * https://docs.textile.io/tutorials/hub/web-app/
+ */
+const loginWithChallenge = (id: Identity): () => Promise<UserAuth> => {  
+  return () => {
+    return new Promise((resolve, reject) => {
+      /** 
+       * Configured for our development server
+       * 
+       * Note: this should be upgraded to wss for production environments.
+       */
+      const socketUrl = `ws://localhost:3001/ws/userauth`
+      
+      /** Initialize our websocket connection */
+      const socket = new WebSocket(socketUrl)
+  
+      /** Wait for our socket to open successfully */
+      socket.onopen = () => {
+        /** Get public key string */
+        const publicKey = id.public.toString();
+  
+        /** Send a new token request */
+        socket.send(JSON.stringify({
+          pubkey: publicKey,
+          type: 'token'
+        })); 
+  
+        /** Listen for messages from the server */
+        socket.onmessage = async (event) => {
+          const data = JSON.parse(event.data)
+          switch (data.type) {
+            /** Error never happen :) */
+            case 'error': {
+              reject(data.value);
+              break;
+            }
+            /** The server issued a new challenge */
+            case 'challenge':{
+              /** Convert the challenge json to a Buffer */
+              const buf = Buffer.from(data.value)
+              /** User our identity to sign the challenge */
+              const signed = await id.sign(buf)
+              /** Send the signed challenge back to the server */
+              socket.send(JSON.stringify({
+                type: 'challenge',
+                sig: Buffer.from(signed).toJSON()
+              })); 
+              break;
+            }
+            /** New token generated */
+            case 'token': {
+              resolve(data.value)
+              break;
+            }
+          }
+        }
+      }
+    });
   }
 }
 
