@@ -55,11 +55,11 @@ jobs:
          with:
            node-version: 12
        - name: Install
-         working-directory: ./hub-browser-auth-app
-         run: npm run install:dropzone
+         working-directory: ./hub-browser-auth-app/src/dropzone
+         run: npm install
        - name: Build
-         working-directory: ./hub-browser-auth-app
-         run: npm run build:dropzone
+         working-directory: ./hub-browser-auth-app/src/dropzone
+         run: npm run build
        - name: Show versions
          working-directory: ./hub-browser-auth-app
          run: npm run textile:check
