@@ -16,7 +16,7 @@ jobs:
           github_token: ${{ secrets.github_token }}
           locale: "US"
   basic:
-     name: versions and builds
+     name: basic
      runs-on: ubuntu-latest
      if: "!contains(github.event.head_commit.message, 'skip-ci')"
      steps:
@@ -31,9 +31,12 @@ jobs:
          run: |
             npm install
             npm install -g npm-check-updates
-       - name: Build
+       - name: Build server
          working-directory: ./hub-browser-auth-app
-         run: npm run build
+         run: npm run build:server
+       - name: Build basic client
+         working-directory: ./hub-browser-auth-app
+         run: npm run build:basic
        - name: Show versions
          working-directory: ./hub-browser-auth-app
          run: npm run textile:check
@@ -41,7 +44,7 @@ jobs:
          working-directory: ./hub-browser-auth-app
          run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
   dropzone:
-     name: versions and builds
+     name: dropzone
      runs-on: ubuntu-latest
      if: "!contains(github.event.head_commit.message, 'skip-ci')"
      steps:
@@ -58,13 +61,13 @@ jobs:
          working-directory: ./hub-browser-auth-app
          run: npm run build:dropzone
        - name: Show versions
-         working-directory: ./hub-browser-auth-app/src/dropzone
+         working-directory: ./hub-browser-auth-app
          run: npm run textile:check
        - name: Check versions
          working-directory: ./hub-browser-auth-app/src/dropzone
          run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
   react-native:
-     name: versions and builds
+     name: react-native
      runs-on: ubuntu-latest
      if: "!contains(github.event.head_commit.message, 'skip-ci')"
      steps:
