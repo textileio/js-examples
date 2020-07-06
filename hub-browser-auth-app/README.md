@@ -42,6 +42,29 @@ npm run clean
 
 The examples here are organized such that there are multiple available application examples that each use the same single server example. In the default configuration, you can only run one app example at a time.
 
+### Devmode example
+
+In this example, you can build your app in developer mode using Hub API keys with the signing requirement disabled. 
+
+* Creating non-signing keys is simple. In the [Hub CLI](https://docs.textile.io/hub/cli/hub/), create a User Group key as normal, but select non-signing key in the final step. This key is great for development, but you **should not use it in production applications**.
+* Once you have the key, add it to the `src/devmode/index.ts` where we create the `KeyInfo` object. When using a non-signing API key, you just leave the secret as an empty string, `''`.
+
+#### Build & serve
+
+**Terminal 1: watch the client code**
+
+```bash
+npm run dev:devmode
+```
+
+**Terminal 2: start the dev server**
+
+```bash
+npm run start:devmode
+```
+
+You can now view the example at [localhost:8080](http://localhost:8080).
+
 ### Basic user auth example
 
 In this example, you can see how to create a basic user auth flow:

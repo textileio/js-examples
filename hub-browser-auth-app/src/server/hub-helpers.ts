@@ -19,8 +19,7 @@ export const newClientDB = async () => {
   const API = process.env.API || undefined
   const db = await Client.withKeyInfo({
     key: process.env.USER_API_KEY,
-    secret: process.env.USER_API_SECRET,
-    type: 0,
+    secret: process.env.USER_API_SECRET
   }, API)
   return db;
 }
