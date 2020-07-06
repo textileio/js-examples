@@ -12,7 +12,7 @@
     "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack"
   },
   "dependencies": {
-    "@textile/hub": "^0.2.2",
+    "@textile/hub": "^0.3.0",
     "@textile/threads-core": "0.1.30",
     "bad-words": "^3.0.3",
     "buffer": "^4.9.2",

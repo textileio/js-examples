@@ -101,8 +101,7 @@ class CheckList extends React.Component<StateProps> {
            */
           const info: KeyInfo = {
             key: USER_API_KEY,
-            secret: USER_API_SECRET,
-            type: 1,
+            secret: USER_API_SECRET
           }
 
           /**
