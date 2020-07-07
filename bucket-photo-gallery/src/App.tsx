@@ -8,7 +8,7 @@ import Dropzone from 'react-dropzone'
 import browserImageSize from 'browser-image-size'
 // @ts-ignore
 import { readAndCompressImage } from 'browser-image-resizer'
-import { Buckets, Client, PushPathResult, KeyInfo } from '@textile/hub'
+import { Buckets, PushPathResult, KeyInfo } from '@textile/hub'
 import { Libp2pCryptoIdentity } from '@textile/threads-core';
 import { Button, Header, Segment } from "semantic-ui-react";
 
