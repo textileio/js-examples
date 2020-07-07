@@ -6,7 +6,7 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    main: "./src/basic/index.ts",
+    main: "./src/client/index.ts",
   },
   output: {
     path: path.resolve(__dirname, 'dist', 'client'),
@@ -17,10 +17,10 @@ module.exports = {
       patterns: [
         {
           from: '*.html',
-          context: path.resolve(__dirname, 'src', 'basic')
+          context: path.resolve(__dirname, 'src', 'client')
         },
         {
-          from: path.resolve(__dirname, 'src/basic/static'),
+          from: path.resolve(__dirname, 'src/client/static'),
           to: path.resolve(__dirname, 'dist/client/static'),
         },
       ],
@@ -28,7 +28,7 @@ module.exports = {
   ],
   resolve: {
     plugins: [
-      new TsconfigPathsPlugin({ configFile: "./src/basic/tsconfig.json" })
+      new TsconfigPathsPlugin({ configFile: "./src/client/tsconfig.json" })
     ],
     // Add ".ts" and ".tsx" as resolvable extensions.
     extensions: [".ts", ".tsx", ".js"],
