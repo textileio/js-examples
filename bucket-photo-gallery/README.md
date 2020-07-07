@@ -6,4 +6,4 @@ In the project directory, you can run,
 
 `npm install`
 
-To launch the example, see the Dropzone section in the main [examples readme](../../README.md).
+To launch the example, see the Bucket app section in the main [examples readme](../README.md).

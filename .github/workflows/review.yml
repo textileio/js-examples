@@ -15,8 +15,8 @@ jobs:
           reporter: github-pr-review
           github_token: ${{ secrets.github_token }}
           locale: "US"
-  basic:
-     name: basic
+  basic-auth:
+     name: basic-auth
      runs-on: ubuntu-latest
      if: "!contains(github.event.head_commit.message, 'skip-ci')"
      steps:
@@ -36,15 +36,15 @@ jobs:
          run: npm run build:server
        - name: Build basic client
          working-directory: ./hub-browser-auth-app
-         run: npm run build:basic
+         run: npm run build:client
        - name: Show versions
          working-directory: ./hub-browser-auth-app
-         run: npm run textile:check
+         run: npx ncu '/^@textile/.*$/'
        - name: Check versions
          working-directory: ./hub-browser-auth-app
          run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
-  dropzone:
-     name: dropzone
+  bucket-gallery:
+     name: bucket-gallery
      runs-on: ubuntu-latest
      if: "!contains(github.event.head_commit.message, 'skip-ci')"
      steps:
@@ -55,16 +55,16 @@ jobs:
          with:
            node-version: 12
        - name: Install
-         working-directory: ./hub-browser-auth-app/src/dropzone
+         working-directory: ./bucket-photo-gallery
          run: npm install
        - name: Build
-         working-directory: ./hub-browser-auth-app/src/dropzone
+         working-directory: ./bucket-photo-gallery
          run: npm run build
        - name: Show versions
-         working-directory: ./hub-browser-auth-app
-         run: npm run textile:check
+         working-directory: ./bucket-photo-gallery
+         run: npx ncu '/^@textile/.*$/'
        - name: Check versions
-         working-directory: ./hub-browser-auth-app/src/dropzone
+         working-directory: ./bucket-photo-gallery
          run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
   react-native:
      name: react-native
@@ -82,7 +82,7 @@ jobs:
          run: npm install
        - name: Show versions
          working-directory: ./react-native-hub-app
-         run: npm run textile:check
+         run: npx ncu '/^@textile/.*$/'
        - name: Check versions
          working-directory: ./react-native-hub-app
          run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;

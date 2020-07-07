@@ -4,15 +4,15 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "bind": "adb reverse tcp:3007 tcp:3007",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "textile:check": "npx ncu '/^@textile/.*$/'",
     "textile:upgrade": "npx ncu -u '/^@textile/.*$/'",
-    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack"
+    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack",
+    "bind": "adb reverse tcp:3007 tcp:3007"
   },
   "dependencies": {
-    "@textile/hub": "^0.3.0",
+    "@textile/hub": "^0.3.2",
     "@textile/threads-core": "0.1.30",
     "bad-words": "^3.0.3",
     "buffer": "^4.9.2",
