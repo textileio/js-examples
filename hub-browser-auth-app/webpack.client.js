@@ -6,10 +6,10 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    main: "./src/devmode/index.ts",
+    main: "./src/client/index.ts",
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist', 'client'),
     filename: "[name]-bundle.js",
   },
   plugins: [
@@ -17,18 +17,18 @@ module.exports = {
       patterns: [
         {
           from: '*.html',
-          context: path.resolve(__dirname, 'src', 'devmode')
+          context: path.resolve(__dirname, 'src', 'client')
         },
         {
-          from: path.resolve(__dirname, 'src/devmode/static'),
-          to: path.resolve(__dirname, 'dist/static'),
+          from: path.resolve(__dirname, 'src/client/static'),
+          to: path.resolve(__dirname, 'dist/client/static'),
         },
       ],
     }),
   ],
   resolve: {
     plugins: [
-      new TsconfigPathsPlugin({ configFile: "./src/devmode/tsconfig.json" })
+      new TsconfigPathsPlugin({ configFile: "./src/client/tsconfig.json" })
     ],
     // Add ".ts" and ".tsx" as resolvable extensions.
     extensions: [".ts", ".tsx", ".js"],
