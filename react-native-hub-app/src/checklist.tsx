@@ -220,24 +220,7 @@ class CheckList extends React.Component<StateProps> {
           break
         }
         case 4: {
-          /**
-           * Buckets
-           *
-           * You can now create Buckets for your User.
-           * Bucket will contain raw files and documents.
-           *
-           * We'll use the same session we already setup for the ThreadDB.
-           */
-          const buckets = await Buckets.fromClient(db)
-
-          const root = await buckets.open('files')
-          if (!root) {
-            throw new Error('Error opening bucket')
-          }
-          const bucketKey = root.key
-
           this.setState({
-            bucketKey,
             promptTitle: 'Publish your Website',
             promptHint: 'Give it a new name, like "Fakeblock"',
             showPrompt: true,
@@ -245,12 +228,27 @@ class CheckList extends React.Component<StateProps> {
           break
         }
         case 5: {
-          const { bucketKey } = this.state
-
           /**
-           * Still using the same context.
+           * Buckets
+           *
+           * You can now create Buckets for your User.
+           * Bucket will contain raw files and documents.
+           *
+           * We'll use the same auth info we already setup for the ThreadDB.
            */
-          const buckets = new Buckets(db.context)
+          const info: KeyInfo = {
+            key: USER_API_KEY,
+            secret: USER_API_SECRET
+          }
+          const identity = await generateIdentity()
+          const buckets = await Buckets.withKeyInfo(info)
+          await buckets.getToken(identity)
+          
+          const root = await buckets.open('files')
+          if (!root) {
+            throw new Error('Error opening bucket')
+          }
+          const bucketKey = root.key
 
           /**
            * Create a simple html string for the webpage
@@ -265,14 +263,14 @@ class CheckList extends React.Component<StateProps> {
            * We add the file as index.html so that we can render it right in the browser afterwards.
            */
           const file = { path: '/index.html', content: Buffer.from(webpage) }
-
           /**
            * Push the file to the root of the Files Bucket.
            */
-          const raw = await buckets.pushPath(bucketKey!, 'index.html', file)
+          const raw = await buckets.pushPath(bucketKey, 'index.html', file)
 
           data.status = 2
           this.setState({
+            bucketKey,
             ipfsAddr: raw.root,
             steps: steps,
           })
