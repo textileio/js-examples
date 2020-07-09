@@ -24,7 +24,7 @@ export class ThreadService {
 
     /* createCredentials hits the server in my hub example */
     const key: KeyInfo = {key: process.env.REACT_APP_API_KEY || ''}
-    this.db = await Database.withKeyInfo(key, this.threadID.toString(), undefined, process.env.REACT_APP_API) // final variable can be undefined
+    this.db = await Database.withKeyInfo(key, "threads.chat.demo", undefined, process.env.REACT_APP_API) // final variable can be undefined
     return this;
   } 
 
