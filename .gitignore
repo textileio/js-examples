@@ -142,6 +142,10 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
+# Xcode Patch
+**/xcshareddata/WorkspaceSettings.xcsettings
+**/ios/threadsdb_app.xcworkspace/xcshareddata/
+
 # Android/IntelliJ
 #
 build/
