@@ -14,7 +14,7 @@ import Prompt from 'react-native-input-prompt'
 import { USER_API_SECRET, USER_API_KEY } from 'react-native-dotenv'
 // @ts-ignore
 import Filter from 'bad-words'
-import { Where } from '@textile/threads-client'
+import { Where } from '@textile/threads'
 import { Buckets, Client, KeyInfo, ThreadID  } from '@textile/hub'
 import {
   createAstronaut,

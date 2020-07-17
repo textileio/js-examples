@@ -47,7 +47,6 @@ const wss = route.all('/ws/userauth', (ctx) => {
            * see ./hub.ts
            */
           const db = await newClientDB()
-
           /** Request a token from the Hub based on the user public key */
           const token = await db.getTokenChallenge(
             data.pubkey, 

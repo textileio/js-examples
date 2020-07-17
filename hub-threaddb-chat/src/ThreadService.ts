@@ -1,7 +1,6 @@
-import { DBInfo } from "@textile/threads-client";
+import { DBInfo } from "@textile/threads";
 import {Libp2pCryptoIdentity} from '@textile/threads-core';
-import { JSONSchema, Database, Collection } from "@textile/threads-database";
-import { ThreadID, KeyInfo } from '@textile/hub'
+import { Collection, Database, KeyInfo, JSONSchema, ThreadID } from "@textile/hub";
 import { ChatInstance } from './types';
 import { getIdentity } from './helpers';
 import { fromEvent, Observable } from 'rxjs';
