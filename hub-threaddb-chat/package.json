@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@textile/hub": "^0.3.3",
-    "@textile/threads-core": "^0.1.30",
-    "@textile/threads-database": "^0.6.1",
+    "@textile/hub": "^0.4.0",
+    "@textile/threads": "^0.3.4",
+    "@textile/threads-core": "^0.1.32",
     "bootstrap": "^4.5.0",
     "emittery": "^0.7.0",
     "react": "^16.13.1",
