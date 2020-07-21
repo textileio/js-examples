@@ -1,6 +1,3 @@
-/** Provides nodejs access to a global Websocket value, required by Hub API */
-;(global as any).WebSocket = require('isomorphic-ws')
-
 import koa from "koa";
 import Router from "koa-router";
 import logger from "koa-logger";
