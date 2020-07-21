@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@textile/hub": "^0.4.0",
+    "@textile/hub": "^0.4.1",
     "@types/jdenticon": "^2.2.0",
     "browser-image-resizer": "^2.1.0",
     "browser-image-size": "^1.1.0",
