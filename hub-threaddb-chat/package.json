@@ -6,6 +6,7 @@
     "@textile/hub": "^0.4.1",
     "@textile/threads": "^0.3.5",
     "@textile/threads-core": "^0.1.33",
+    "@textile/threads-database": "file:../../js-threads/packages/database",
     "bootstrap": "^4.5.0",
     "emittery": "^0.7.0",
     "react": "^16.13.1",

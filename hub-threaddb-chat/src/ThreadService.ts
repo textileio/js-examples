@@ -18,12 +18,13 @@ export class ThreadService {
   }
   
   public init  = async (): Promise<ThreadService> => {
+    localStorage.clear()
     // Create or restore identity from localStorage
     this.identity = await getIdentity()
 
     /* createCredentials hits the server in my hub example */
     const key: KeyInfo = {key: process.env.REACT_APP_API_KEY || ''}
-    this.db = await Database.withKeyInfo(key, "threads.chat.demo", undefined, process.env.REACT_APP_API) // final variable can be undefined
+    this.db = await Database.withKeyInfo(key, 'io.textile.chat', undefined, process.env.REACT_APP_API) // final variable can be undefined
     return this;
   } 
 
@@ -47,7 +48,8 @@ export class ThreadService {
       throw new Error('Database not setup')
     }
     /** Start with an empty thread */
-    await this.db.start(this.identity, {threadID: this.threadID})
+    await this.db.start(this.identity)
+    this.threadID = this.db.threadID || this.threadID
 
     await this.createCollection()
     this.storeCurrentRoom()
@@ -87,7 +89,6 @@ export class ThreadService {
     }
 
     await this.db.start(this.identity, {threadID: this.threadID})
-    // await this.db.start(this.identity)
     await this.createCollection()
     this.threadID = this.db.threadID || this.threadID
     return this.db.threadID

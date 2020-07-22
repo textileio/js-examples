@@ -48,6 +48,7 @@ class App extends React.Component {
       let room = window.location.hash.replace('#', '');
       if (room && room !== '') {
         this.context.rejoinOpenRoom().then((threadID: ThreadID) => {
+          this.announce()
           this.setRoom(threadID)
         })
       } 
@@ -67,19 +68,18 @@ class App extends React.Component {
     this.context.disconnect();
   }
 
-  setRoom(threadID: ThreadID) {
-    this.context.getInfoString().then((info: string) => {
-      const b = Buffer.from(info)
-      this.setState({invite: b.toString('hex')})
-    })
-    this.setState({
-      threadID,
-    })
+  async setRoom(threadID: ThreadID) {
+    const info = await this.context.getInfoString()
+    console.log('info')
+    console.log(info)
+    const b = Buffer.from(info)
+    this.setState({threadID, invite: b.toString('hex')})
   }
-  createNewRoom () {
-    this.context.startNewRoom().then(this.setRoom.bind(this))
+  async createNewRoom () {
+    const threadID = await this.context.startNewRoom()
+    await this.setRoom(threadID)
   }
-  joinInvite() {
+  async joinInvite() {
     // @ts-ignore
     const info = this.textInput.current.value
     if (info === '') {
@@ -87,7 +87,19 @@ class App extends React.Component {
     }
     const json = Buffer.from(info, 'hex').toString()
     const invite = JSON.parse(json)
-    this.context.joinExternalRoom(invite).then(this.setRoom.bind(this))
+    const threadID = await this.context.joinExternalRoom(invite)
+    console.log('threadID')
+    console.log(threadID)
+    await this.setRoom(threadID)
+  }
+
+  async announce() {
+    this.context.send({
+      _id: '',
+      text: '(entered)',
+      // @ts-ignore
+      author: this.state.username
+    });
   }
   scrollToBottom = () => {
     // @ts-ignore
