@@ -5,6 +5,10 @@ import { ChatInstance } from './types';
 import { getIdentity } from './helpers';
 import { fromEvent, Observable } from 'rxjs';
 
+// We'll use this directly to delete our dbs when needed
+const level = require("level");
+const dbName = "threads.chat.reboot";
+
 export class ThreadService {
   public threadID: ThreadID
   private db?: Database
@@ -23,9 +27,27 @@ export class ThreadService {
 
     /* createCredentials hits the server in my hub example */
     const key: KeyInfo = {key: process.env.REACT_APP_API_KEY || ''}
-    this.db = await Database.withKeyInfo(key, "threads.chat.demo", undefined, process.env.REACT_APP_API) // final variable can be undefined
+    // We could also consider prefixing the db by identity (or some # of chars from the public key)
+    this.db = await Database.withKeyInfo(key, dbName, undefined, process.env.REACT_APP_API) // final variable can be undefined
     return this;
   } 
+
+  /**
+   * Reset the current db.
+   * Done by first closing it if open, deleting the existing data, and re-initializing.
+   */
+  public reset = async (): Promise<ThreadService> => {
+    await this.db?.close()
+    // This will actually "destroy" the database. This is handy here because we're "switching" rooms.
+    // But it might NOT be want you want in a real-world app!
+    await new Promise<void>((resolve, reject) => {
+      level.destroy(dbName, (err?: Error) => {
+        if (err !== undefined) reject(err)
+        resolve()
+      })
+    })
+    return this.init()
+  };
 
   /**
    * Stores the threadId as a string in the URL
@@ -47,6 +69,7 @@ export class ThreadService {
       throw new Error('Database not setup')
     }
     /** Start with an empty thread */
+    await this.reset() // Reset deletes any existing data for us
     await this.db.start(this.identity, {threadID: this.threadID})
 
     await this.createCollection()
@@ -62,11 +85,16 @@ export class ThreadService {
     if (!this.identity) {
       throw new Error('Identity not found')
     }
+    // Since we're joining an external room, we'll reset our local db and context.
+    // This might NOT be what you want to do in a real-world app!
+    await this.reset();
+
     if (!this.db) {
       throw new Error('Database not setup')
     }
     /** Join from the Invite payload */
-    await this.db.startFromInfo(this.identity, invite)
+    const err = await this.db.startFromInfo(this.identity, invite)
+    if (err instanceof Error) throw err
     this.threadID = this.db.threadID || this.threadID
 
     await this.createCollection()
