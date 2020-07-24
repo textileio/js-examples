@@ -25,7 +25,7 @@ export class ThreadService {
     // Create or restore identity from localStorage
     this.identity = await getIdentity()
 
-    /* createCredentials hits the server in my hub example */
+    /* You'll need to include this information in your app */
     const key: KeyInfo = {key: process.env.REACT_APP_API_KEY || ''}
     // We could also consider prefixing the db by identity (or some # of chars from the public key)
     this.db = await Database.withKeyInfo(key, dbName, undefined, process.env.REACT_APP_API) // final variable can be undefined
