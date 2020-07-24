@@ -71,6 +71,7 @@ class App extends React.Component {
     this.context.getInfoString().then((info: string) => {
       const b = Buffer.from(info)
       this.setState({invite: b.toString('hex')})
+      this.setupObservables()
     })
     this.setState({
       threadID,
