@@ -8,8 +8,7 @@ import Dropzone from 'react-dropzone'
 import browserImageSize from 'browser-image-size'
 // @ts-ignore
 import { readAndCompressImage } from 'browser-image-resizer'
-import { Buckets, PushPathResult, KeyInfo } from '@textile/hub'
-import { Libp2pCryptoIdentity } from '@textile/threads-core';
+import { Buckets, PushPathResult, KeyInfo, PrivateKey } from '@textile/hub'
 import { Button, Header, Segment } from "semantic-ui-react";
 
 import {PhotoSample, Photo, GalleryIndex, AppState} from './Types'
@@ -17,7 +16,7 @@ import './App.css';
 
 class App extends React.Component {
   keyInfo: KeyInfo = {
-    key: 'q4artt6q33q6ksxswuufmeh87ru',
+    key: 'b735u5g2ydesngb6lpuiqvmiwsm',
   }
   state: AppState = {
     metadata: [],
@@ -66,13 +65,13 @@ class App extends React.Component {
    * Read more here:
    * https://docs.textile.io/tutorials/hub/libp2p-identities/
    */
-  getIdentity = async (): Promise<Libp2pCryptoIdentity> => {
+  getIdentity = async (): Promise<PrivateKey> => {
     try {
       var storedIdent = localStorage.getItem("identity")
       if (storedIdent === null) {
         throw new Error('No identity')
       }
-      const restored = Libp2pCryptoIdentity.fromString(storedIdent)
+      const restored = PrivateKey.fromString(storedIdent)
       return restored
     }
     catch (e) {
@@ -80,7 +79,7 @@ class App extends React.Component {
        * If any error, create a new identity.
        */
       try {
-        const identity = await Libp2pCryptoIdentity.fromRandom()
+        const identity = await PrivateKey.fromRandom()
         const identityString = identity.toString()
         localStorage.setItem("identity", identityString)
         return identity
@@ -98,15 +97,15 @@ class App extends React.Component {
     if (!this.state.identity) {
       throw new Error('Identity not set')
     }
-    const buckets = await Buckets.withKeyInfo(this.keyInfo)
+    const buckets = await Buckets.withKeyInfo(this.keyInfo, 'http://localhost:3007')
     // Authorize the user and your insecure keys with getToken
     await buckets.getToken(this.state.identity)
 
-    const root = await buckets.open('io.textile.dropzone')
-    if (!root) {
+    const buck = await buckets.getOrInit('io.textile.dropzone')
+    if (!buck.root) {
       throw new Error('Failed to open bucket')
     }
-    return {buckets: buckets, bucketKey: root.key};
+    return {buckets: buckets, bucketKey: buck.root.key};
   }
 
   /**
@@ -180,6 +179,7 @@ class App extends React.Component {
     }
     for (let path of index.paths) {
       const metadata = await this.state.buckets.pullPath(this.state.bucketKey, path)
+      console.log(await this.state.buckets.links(this.state.bucketKey))
       const { value } = await metadata.next();
       let str = "";
       for (var i = 0; i < value.length; i++) {
@@ -231,25 +231,12 @@ class App extends React.Component {
    * @param file 
    * @param path 
    */
-  insertFile(file: File, path: string): Promise<PushPathResult> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onabort = () => reject('file reading was aborted')
-      reader.onerror = () => reject('file reading has failed')
-      reader.onload = () => {
-      // Do whatever you want with the file contents
-        const binaryStr = reader.result
-
-        if (!this.state.buckets || !this.state.bucketKey) {
-          reject('No bucket client or root key')
-          return
-        }
-        this.state.buckets.pushPath(this.state.bucketKey, path, binaryStr).then((raw) => {
-          resolve(raw)
-        })
-      }
-      reader.readAsArrayBuffer(file)
-    })
+  insertFile = async (file: File, path: string): Promise<PushPathResult> => {
+    if (!this.state.buckets || !this.state.bucketKey) {
+      throw new Error('No bucket client or root key')
+    }
+    const buckets: Buckets = this.state.buckets
+    return await buckets.pushPath(this.state.bucketKey, path, file.stream())
   }
 
   /**

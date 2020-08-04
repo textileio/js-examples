@@ -1,5 +1,4 @@
-import { Buckets, UserAuth } from '@textile/hub'
-import { Identity } from '@textile/threads-core'
+import { Buckets, Identity, UserAuth } from '@textile/hub'
 import { PhotoProps } from 'react-photo-gallery'
 
 export interface PhotoSample {
