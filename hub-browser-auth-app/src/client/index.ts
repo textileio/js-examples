@@ -1,6 +1,5 @@
 
-import { Client, UserAuth } from '@textile/hub'
-import {Libp2pCryptoIdentity, Identity} from '@textile/threads-core';
+import { Client, UserAuth, Identity, PrivateKey } from '@textile/hub'
 import {displayIdentity, displayStatus, displayAvatar, displayThreadsList} from './ui'
 
 /**
@@ -9,7 +8,7 @@ import {displayIdentity, displayStatus, displayAvatar, displayThreadsList} from 
  * The identity will be cached in the browser for later
  * sessions.
  */
-const getIdentity = (async (): Promise<Libp2pCryptoIdentity> => {
+const getIdentity = (async (): Promise<PrivateKey> => {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   try {
@@ -21,7 +20,7 @@ const getIdentity = (async (): Promise<Libp2pCryptoIdentity> => {
     if (storedIdent === null) {
       throw new Error('No identity')
     }
-    const restored = Libp2pCryptoIdentity.fromString(storedIdent)
+    const restored = PrivateKey.fromString(storedIdent)
     return restored
   }
   catch (e) {
@@ -29,7 +28,7 @@ const getIdentity = (async (): Promise<Libp2pCryptoIdentity> => {
      * If any error, create a new identity.
      */
     try {
-      const identity = await Libp2pCryptoIdentity.fromRandom()
+      const identity = await PrivateKey.fromRandom()
       const identityString = identity.toString()
       localStorage.setItem("identity", identityString)
       return identity
@@ -119,7 +118,7 @@ const createCredentials = async (): Promise<UserAuth> => {
 class HubClient {
 
   /** The users unique pki identity */
-  id?: Libp2pCryptoIdentity
+  id?: PrivateKey
 
   /** The Hub API authentication */
   client?: Client
@@ -136,7 +135,7 @@ class HubClient {
     /** Create or get identity */
     this.id = await getIdentity();
     /** Contains the full identity (including private key) */
-    const identity = this.id.toString();
+    const identity = this.id.public.toString();
 
     /** Render our avatar */
     displayAvatar(identity)

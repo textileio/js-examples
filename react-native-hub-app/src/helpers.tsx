@@ -1,6 +1,5 @@
 import { AsyncStorage } from 'react-native'
-import { ThreadID } from '@textile/hub'
-import { Libp2pCryptoIdentity } from '@textile/threads-core'
+import { ThreadID, Identity, PrivateKey } from '@textile/hub'
 
 const version = 10002 //Math.floor(Math.random() * 1000);
 const IDENTITY_KEY = 'identity-' + version
@@ -28,12 +27,12 @@ export const getCachedUserThread = async (): Promise<ThreadID | undefined> => {
   return undefined
 }
 
-export const generateIdentity = async (): Promise<Libp2pCryptoIdentity> => {
+export const generateIdentity = async (): Promise<PrivateKey> => {
   let idStr = await AsyncStorage.getItem(IDENTITY_KEY)
   if (idStr) {
-    return await Libp2pCryptoIdentity.fromString(idStr)
+    return await PrivateKey.fromString(idStr)
   } else {
-    const id = await Libp2pCryptoIdentity.fromRandom()
+    const id = await PrivateKey.fromRandom()
     idStr = id.toString()
     await AsyncStorage.setItem(IDENTITY_KEY, idStr)
     return id
