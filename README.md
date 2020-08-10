@@ -14,6 +14,10 @@ Please open all issues on [textileio/js-textile](https://github.com/textileio/js
 - [x] Browser example storing user files in Buckets
 - [x] Browser example with API Auth Provider
 
+**Note**
+
+The chat demo, hub-threaddb-chat, has been temporarily deprecated until we complete the [threads refactor](https://github.com/textileio/js-threads/issues/414) project.
+
 > Examples and demos using Textile's Javascript/Typescript libraries and clients.
 
 ### User buckets example

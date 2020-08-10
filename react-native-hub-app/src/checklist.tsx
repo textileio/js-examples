@@ -244,11 +244,11 @@ class CheckList extends React.Component<StateProps> {
           const buckets = await Buckets.withKeyInfo(info)
           await buckets.getToken(identity)
           
-          const root = await buckets.open('files')
-          if (!root) {
+          const result = await buckets.getOrInit('files')
+          if (!result.root) {
             throw new Error('Error opening bucket')
           }
-          const bucketKey = root.key
+          const bucketKey = result.root.key
 
           /**
            * Create a simple html string for the webpage
