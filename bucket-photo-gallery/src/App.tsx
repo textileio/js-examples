@@ -97,7 +97,7 @@ class App extends React.Component {
     if (!this.state.identity) {
       throw new Error('Identity not set')
     }
-    const buckets = await Buckets.withKeyInfo(this.keyInfo, 'http://localhost:3007')
+    const buckets = await Buckets.withKeyInfo(this.keyInfo)
     // Authorize the user and your insecure keys with getToken
     await buckets.getToken(this.state.identity)
 
