@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@textile/hub": "^0.5.1",
+    "@textile/hub": "^0.5.2",
     "@types/jdenticon": "^2.2.0",
     "browser-image-resizer": "^2.1.0",
     "browser-image-size": "^1.1.0",
@@ -29,7 +29,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "textile:check": "npx ncu '/^@textile/.*$/'",
+    "textile:upgrade": "npx ncu -u '/^@textile/.*$/'"
   },
   "eslintConfig": {
     "extends": "react-app"
