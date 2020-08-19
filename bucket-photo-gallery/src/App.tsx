@@ -16,7 +16,7 @@ import './App.css';
 
 class App extends React.Component {
   keyInfo: KeyInfo = {
-    key: 'b735u5g2ydesngb6lpuiqvmiwsm',
+    key: 'AKLSlskdjfsoi23lkjf23o9f',
   }
   state: AppState = {
     metadata: [],

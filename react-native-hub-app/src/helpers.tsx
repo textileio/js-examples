@@ -1,7 +1,7 @@
 import { AsyncStorage } from 'react-native'
 import { ThreadID, PrivateKey } from '@textile/hub'
 
-const version = 10002 //Math.floor(Math.random() * 1000);
+const version = 10003 //Math.floor(Math.random() * 1000);
 const IDENTITY_KEY = 'identity-' + version
 const USER_THREAD_ID = 'user-thread-' + version
 

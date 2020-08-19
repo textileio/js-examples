@@ -8,11 +8,11 @@
     "start": "react-native start",
     "textile:check": "npx ncu '/^@textile/.*$/'",
     "textile:upgrade": "npx ncu -u '/^@textile/.*$/'",
-    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack",
+    "postinstall": "npx rn-nodeify --install fs,path,process,buffer,crypto,stream,vm --hack",
     "bind": "adb reverse tcp:3007 tcp:3007"
   },
   "dependencies": {
-    "@textile/hub": "^0.5.2",
+    "@textile/hub": "^0.6.0",
     "bad-words": "^3.0.3",
     "buffer": "^4.9.2",
     "events": "^3.1.0",
@@ -29,6 +29,7 @@
     "rn-nodeify": "^10.2.0",
     "stream": "0.0.2",
     "stream-browserify": "^1.0.0",
+    "text-encoding": "^0.7.0",
     "vm-browserify": "0.0.4"
   },
   "devDependencies": {
