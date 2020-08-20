@@ -156,15 +156,16 @@ class App extends React.Component {
   }
 
   render() {
+    const tabs = [
+      { value: "1", label: "Send" },
+      { value: "2", label: `Inbox (${this.state.inbox.length})` },
+    ]
     return (
       <React.Fragment>
         <div className={'container'}>
           <CardTabGroup
             name="mailboxes"
-            options={[
-              { value: "1", label: "Send" },
-              { value: "2", label: `Inbox (${this.state.inbox.length})` },
-            ]}
+            options={tabs}
             value={this.state.mailboxes}
             onChange={this._handleChange}
           />
