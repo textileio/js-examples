@@ -20,9 +20,15 @@ The chat demo, hub-threaddb-chat, has been temporarily deprecated until we compl
 
 > Examples and demos using Textile's Javascript/Typescript libraries and clients.
 
-### User buckets example
+### User buckets photo gallery example
 
 This example users non-signing keys for development mode. Here, you'll create a new user and then give them an interface to upload files to their own bucket.
+
+You can read about key generation here: https://docs.textile.io/hub/apis/.
+
+Next, you will need to update the example to use your Hub API key, https://github.com/textileio/js-examples/blob/master/bucket-photo-gallery/src/App.tsx#L19.
+
+Note: you will want to use a signing key if you use this example for a production application. Read more about that process here, https://docs.textile.io/tutorials/hub/production-auth/.
 
 #### Build & serve
 
@@ -32,7 +38,7 @@ Change directories into the `bucket-photo-galleries` repo.
 npm run start
 ```
 
-Your browser should automatically launch to the react app running on [localhost:3001](http://localhost:3001).
+Your browser should automatically launch to the app running on [localhost:3001](http://localhost:3001).
 
 ## Textile Hub Authentication
 
