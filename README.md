@@ -13,6 +13,7 @@ Please open all issues on [textileio/js-textile](https://github.com/textileio/js
 - [x] React Native Hub App (Threads & Buckets)
 - [x] Browser example storing user files in Buckets
 - [x] Browser example with API Auth Provider
+- [x] User identities from Metamask Eth address
 
 **Note**
 
