@@ -3,6 +3,7 @@ import React from 'react'
 import { dispatchCustomEvent, ButtonPrimary, GlobalNotification, Input } from 'slate-react-system'
 import { PrivateKey } from '@textile/hub'
 import { BigNumber, providers, utils } from 'ethers'
+import { hashSync } from 'bcryptjs'
 
 /**
  * Metamask signing and seed generation adapted from pnlp project. See sources here,
@@ -46,7 +47,8 @@ class App extends React.Component {
       '\n' +
       '\n' +
       '\n' +
-      'Your non-recoverable, private, non-persisted password or secret phrase is: \n' +
+      'The hash of your non-recoverable, private, non-persisted password or secret \n' +
+      'phrase is: \n' +
       '\n' +
       secret +
       '\n' +
@@ -89,7 +91,9 @@ class App extends React.Component {
   }
   generatePrivateKey = async (): Promise<PrivateKey> => {
     const metamask = await this.getAddressAndSigner()
-    const message = this.generateMessageForEntropy(metamask.address, 'textile-demo', this.state.secret)
+    // avoid sending the raw secret by hashing it first
+    const secret = hashSync(this.state.secret, 10)
+    const message = this.generateMessageForEntropy(metamask.address, 'textile-demo', secret)
     const signedText = await metamask.signer.signMessage(message);
     const hash = utils.keccak256(signedText);
     if (hash === null) {
