@@ -39,9 +39,9 @@ jobs:
       - name: Install
         working-directory: ${{ matrix.example }}
         run: npm install
-       - name: Show versions
+      - name: Show versions
         working-directory: ${{ matrix.example }}
         run: npx ncu '/^@textile/.*$/'
-       - name: Check versions
+      - name: Check versions
         working-directory: ${{ matrix.example }}
         run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
