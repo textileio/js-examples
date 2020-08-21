@@ -1,8 +1,9 @@
 {
-  "name": "metamask-textile-identities",
+  "name": "3box-textile-identities",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "3box": "^1.21.0",
     "@emotion/react": "11.0.0-next.12",
     "@textile/hub": "^0.6.0",
     "ethers": "^5.0.8",

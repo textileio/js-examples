@@ -15,75 +15,33 @@ jobs:
           reporter: github-pr-review
           github_token: ${{ secrets.github_token }}
           locale: "US"
-  basic-auth:
-     name: basic-auth
-     runs-on: ubuntu-latest
-     if: "!contains(github.event.head_commit.message, 'skip-ci')"
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v1
-       - name: Setup
-         uses: actions/setup-node@v1
-         with:
-           node-version: 12
-       - name: Install
-         working-directory: ./hub-browser-auth-app
-         run: |
-            npm install
-            npm install -g npm-check-updates
-       - name: Build server
-         working-directory: ./hub-browser-auth-app
-         run: npm run build:server
-       - name: Build basic client
-         working-directory: ./hub-browser-auth-app
-         run: npm run build:client
-       - name: Show versions
-         working-directory: ./hub-browser-auth-app
-         run: npx ncu '/^@textile/.*$/'
-       - name: Check versions
-         working-directory: ./hub-browser-auth-app
-         run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
-  bucket-gallery:
-     name: bucket-gallery
-     runs-on: ubuntu-latest
-     if: "!contains(github.event.head_commit.message, 'skip-ci')"
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v1
-       - name: Setup
-         uses: actions/setup-node@v1
-         with:
-           node-version: 12
-       - name: Install
-         working-directory: ./bucket-photo-gallery
-         run: npm install
-       - name: Build
-         working-directory: ./bucket-photo-gallery
-         run: npm run build
-       - name: Show versions
-         working-directory: ./bucket-photo-gallery
-         run: npx ncu '/^@textile/.*$/'
-       - name: Check versions
-         working-directory: ./bucket-photo-gallery
-         run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
-  react-native:
-     name: react-native
-     runs-on: ubuntu-latest
-     if: "!contains(github.event.head_commit.message, 'skip-ci')"
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v1
-       - name: Setup
-         uses: actions/setup-node@v1
-         with:
-           node-version: 12
-       - name: Install
-         working-directory: ./react-native-hub-app
-         run: npm install
-       - name: Show versions
-         working-directory: ./react-native-hub-app
-         run: npx ncu '/^@textile/.*$/'
-       - name: Check versions
-         working-directory: ./react-native-hub-app
-         run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
-         
+  library-checks:
+    name: library-checks
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    strategy:
+      matrix:
+        example: [
+          'hub-browser-auth-app',
+          'bucket-photo-gallery',
+          'react-native-hub-app',
+          'metamask-identities-ed25519',
+          '3box-identities-ed25519',
+          'mailbox-setup'
+        ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install
+        working-directory: ${{ matrix.example }}
+        run: npm install
+      - name: Show versions
+        working-directory: ${{ matrix.example }}
+        run: npx ncu '/^@textile/.*$/'
+      - name: Check versions
+        working-directory: ${{ matrix.example }}
+        run: if [ $(npx ncu '/^@textile/.*$/' | grep '@textile/' | wc -l) == 0 ]; then echo 'ok'; else exit 1; fi;
