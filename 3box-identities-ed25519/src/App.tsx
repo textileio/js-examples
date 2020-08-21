@@ -1,6 +1,6 @@
 import React from 'react'
 // @ts-ignore
-import { dispatchCustomEvent, ButtonPrimary, ButtonDisabled, GlobalNotification, Input } from 'slate-react-system'
+import { dispatchCustomEvent, ButtonPrimary, ButtonDisabled, GlobalNotification } from 'slate-react-system'
 import { PrivateKey } from '@textile/hub'
 
 const Box = require("3box")
