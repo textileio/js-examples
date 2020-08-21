@@ -136,6 +136,7 @@ class App extends React.Component {
               name="secret"
               value={this.state.secret}
               placeholder="Secret"
+              type="password"
               onChange={this.handleChange}
             />
             <ButtonPrimary full onClick={this.generatePrivateKey} >Login with Metamask</ButtonPrimary>
