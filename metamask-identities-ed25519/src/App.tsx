@@ -70,7 +70,7 @@ class App extends React.Component {
       );
     }
 
-    console.debug('initializing web3 provider...');
+    console.debug('Initializing web3 provider...');
     // @ts-ignore
     const provider = new providers.Web3Provider((window as WindowInstanceWithEthereum).ethereum);
     const signer = provider.getSigner();
@@ -109,7 +109,7 @@ class App extends React.Component {
       .map((hexNoPrefix) => BigNumber.from('0x' + hexNoPrefix).toNumber())
     
     if (array.length !== 32) {
-      throw new Error('Hash of signerature is not the correct size! Something bad went wrong!');
+      throw new Error('Hash of signature is not the correct size! Something went wrong!');
     }
     const identity = PrivateKey.fromRawEd25519Seed(Uint8Array.from(array))
     console.log(identity.toString())
