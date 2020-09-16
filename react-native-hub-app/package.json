@@ -12,7 +12,7 @@
     "bind": "adb reverse tcp:3007 tcp:3007"
   },
   "dependencies": {
-    "@textile/hub": "^0.6.1",
+    "@textile/hub": "^0.7.1-alpha.0",
     "bad-words": "^3.0.3",
     "buffer": "^4.9.2",
     "events": "^3.1.0",

@@ -8,16 +8,18 @@ import Dropzone from 'react-dropzone'
 import browserImageSize from 'browser-image-size'
 // @ts-ignore
 import { readAndCompressImage } from 'browser-image-resizer'
-import { Buckets, PushPathResult, KeyInfo, PrivateKey } from '@textile/hub'
+import { Buckets, PushPathResult, KeyInfo, PrivateKey, WithKeyInfoOptions } from '@textile/hub'
 import { Button, Header, Segment } from "semantic-ui-react";
 
 import {PhotoSample, Photo, GalleryIndex, AppState} from './Types'
 import './App.css';
 
 class App extends React.Component {
+  ipfsGateway = 'https://hub.textile.io'
   keyInfo: KeyInfo = {
-    key: 'AKLSlskdjfsoi23lkjf23o9f',
+    key: 'br7gmgpzb6a54bci2lq3tqruuoa',
   }
+  keyOptions: WithKeyInfoOptions = {}
   state: AppState = {
     metadata: [],
     photos: [],
@@ -97,11 +99,11 @@ class App extends React.Component {
     if (!this.state.identity) {
       throw new Error('Identity not set')
     }
-    const buckets = await Buckets.withKeyInfo(this.keyInfo)
+    const buckets = await Buckets.withKeyInfo(this.keyInfo, this.keyOptions)
     // Authorize the user and your insecure keys with getToken
     await buckets.getToken(this.state.identity)
 
-    const buck = await buckets.getOrInit('io.textile.dropzone')
+    const buck = await buckets.getOrCreate('io.textile.dropzone')
     if (!buck.root) {
       throw new Error('Failed to open bucket')
     }
@@ -191,7 +193,7 @@ class App extends React.Component {
         photos: [
           ...this.state.photos,
           {
-            src:`https://${photo.cid}.ipfs.hub.textile.io`,
+            src:`${this.ipfsGateway}/ipfs/${photo.cid}`,
             width: photo.width,
             height: photo.height,
             key: photo.name,
@@ -301,7 +303,7 @@ class App extends React.Component {
       photos: [
         ...this.state.photos,
         {
-          src:`https://${photo.cid}.ipfs.hub.textile.io`,
+          src: `${this.ipfsGateway}/ipfs/${photo.cid}`,
           width: photo.width,
           height: photo.height,
           key: photo.name,
