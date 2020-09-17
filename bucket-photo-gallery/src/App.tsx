@@ -56,24 +56,6 @@ class App extends React.Component {
         isLoading: false
       })
     }
-
-    const pow = await Pow.withKeyInfo(this.keyInfo, this.keyOptions)
-    await pow.getToken(identity)
-    console.log(await pow.health())
-    console.log(await pow.info())
-    const peers = await pow.peers()
-    console.log(peers)
-    console.log(await pow.showAll())
-    const addrs = await pow.addrs()
-    console.log(addrs.addrsList)
-    console.log(await pow.balance(addrs.addrsList[0].addr))
-    const peer = peers.peersList[0].addrInfo ? peers.peersList[0].addrInfo.id : ''
-    console.log(await pow.connectedness(peer))
-    console.log(await pow.findPeer(peer))
-
-    console.log('archives')
-    const config = {}
-    console.log(await pow.listStorageDealRecords(config))
   }
 
   /**
