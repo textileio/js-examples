@@ -19,10 +19,6 @@ class App extends React.Component {
   keyInfo: KeyInfo = {
     key: 'bqsxsoiov44e2ej7sf6l4p4ta3e',
   }
-  keyOptions: WithKeyInfoOptions = {
-    // debug: true,
-    host: 'https://webapi.hub.staging.textile.io:443'
-  }
   state: AppState = {
     metadata: [],
     photos: [],
@@ -74,6 +70,10 @@ class App extends React.Component {
     const peer = peers.peersList[0].addrInfo ? peers.peersList[0].addrInfo.id : ''
     console.log(await pow.connectedness(peer))
     console.log(await pow.findPeer(peer))
+
+    console.log('archives')
+    const config = {}
+    console.log(await pow.listStorageDealRecords(config))
   }
 
   /**
@@ -124,6 +124,7 @@ class App extends React.Component {
     if (!buck.root) {
       throw new Error('Failed to open bucket')
     }
+    await buckets.archive(buck.root.key)
     return {buckets: buckets, bucketKey: buck.root.key};
   }
 
