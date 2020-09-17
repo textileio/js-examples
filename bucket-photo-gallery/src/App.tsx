@@ -8,7 +8,7 @@ import Dropzone from 'react-dropzone'
 import browserImageSize from 'browser-image-size'
 // @ts-ignore
 import { readAndCompressImage } from 'browser-image-resizer'
-import { Buckets, PushPathResult, KeyInfo, PrivateKey, WithKeyInfoOptions } from '@textile/hub'
+import { Buckets, PushPathResult, KeyInfo, PrivateKey, WithKeyInfoOptions, Pow } from '@textile/hub'
 import { Button, Header, Segment } from "semantic-ui-react";
 
 import {PhotoSample, Photo, GalleryIndex, AppState} from './Types'
@@ -17,9 +17,12 @@ import './App.css';
 class App extends React.Component {
   ipfsGateway = 'https://hub.textile.io'
   keyInfo: KeyInfo = {
-    key: 'br7gmgpzb6a54bci2lq3tqruuoa',
+    key: 'bqsxsoiov44e2ej7sf6l4p4ta3e',
   }
-  keyOptions: WithKeyInfoOptions = {}
+  keyOptions: WithKeyInfoOptions = {
+    // debug: true,
+    host: 'https://webapi.hub.staging.textile.io:443'
+  }
   state: AppState = {
     metadata: [],
     photos: [],
@@ -57,6 +60,20 @@ class App extends React.Component {
         isLoading: false
       })
     }
+
+    const pow = await Pow.withKeyInfo(this.keyInfo, this.keyOptions)
+    await pow.getToken(identity)
+    console.log(await pow.health())
+    console.log(await pow.info())
+    const peers = await pow.peers()
+    console.log(peers)
+    console.log(await pow.showAll())
+    const addrs = await pow.addrs()
+    console.log(addrs.addrsList)
+    console.log(await pow.balance(addrs.addrsList[0].addr))
+    const peer = peers.peersList[0].addrInfo ? peers.peersList[0].addrInfo.id : ''
+    console.log(await pow.connectedness(peer))
+    console.log(await pow.findPeer(peer))
   }
 
   /**
