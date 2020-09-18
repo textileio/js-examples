@@ -17,7 +17,10 @@ import './App.css';
 class App extends React.Component {
   ipfsGateway = 'https://hub.textile.io'
   keyInfo: KeyInfo = {
-    key: 'bqsxsoiov44e2ej7sf6l4p4ta3e',
+    key: 'blig3u7vlmo2uzxcx67yuvfq5qy'
+  }
+  keyInfoOptions: WithKeyInfoOptions = {
+    debug: false
   }
   state: AppState = {
     metadata: [],
@@ -47,7 +50,6 @@ class App extends React.Component {
     })
 
     await this.getBucketLinks()
-
     const index = await this.getPhotoIndex()
     if (index) {
       await this.galleryFromIndex(index)
@@ -98,7 +100,7 @@ class App extends React.Component {
     if (!this.state.identity) {
       throw new Error('Identity not set')
     }
-    const buckets = await Buckets.withKeyInfo(this.keyInfo)
+    const buckets = await Buckets.withKeyInfo(this.keyInfo, this.keyInfoOptions)
     // Authorize the user and your insecure keys with getToken
     await buckets.getToken(this.state.identity)
 
@@ -106,7 +108,6 @@ class App extends React.Component {
     if (!buck.root) {
       throw new Error('Failed to open bucket')
     }
-    await buckets.archive(buck.root.key)
     return {buckets: buckets, bucketKey: buck.root.key};
   }
 
