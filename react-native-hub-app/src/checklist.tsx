@@ -243,7 +243,7 @@ class CheckList extends React.Component<StateProps> {
           const buckets = await Buckets.withKeyInfo(info)
           await buckets.getToken(identity)
           
-          const result = await buckets.getOrInit('files')
+          const result = await buckets.getOrCreate('files')
           if (!result.root) {
             throw new Error('Error opening bucket')
           }

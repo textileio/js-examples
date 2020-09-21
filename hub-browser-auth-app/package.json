@@ -19,8 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@koa/cors": "^3.1.0",
-    "@textile/hub": "^0.6.1",
-    "@textile/threads-core": "^0.3.0",
+    "@textile/hub": "^0.7.1",
     "dotenv": "^8.2.0",
     "emittery": "^0.7.0",
     "jdenticon": "^2.2.0",
