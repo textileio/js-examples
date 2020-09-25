@@ -1,4 +1,4 @@
-import {createAPISig, Client} from '@textile/hub';
+import { createAPISig, Client } from '@textile/hub';
 
 /**
  * getAPISig uses helper function to create a new sig

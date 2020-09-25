@@ -46,7 +46,7 @@ class App extends React.Component {
     const mailboxID = await this.client.setupMailbox()
 
     // Create a listener for all new messages in the inbox
-    await this.client.watchInbox(mailboxID, this.handleNewMessage)
+    this.client.watchInbox(mailboxID, this.handleNewMessage)
 
     // Grab all existing inbox messages and decrypt them locally
     const messages = await this.client.listInboxMessages()

@@ -8,7 +8,7 @@ import Dropzone from 'react-dropzone'
 import browserImageSize from 'browser-image-size'
 // @ts-ignore
 import { readAndCompressImage } from 'browser-image-resizer'
-import { Buckets, PushPathResult, KeyInfo, PrivateKey, WithKeyInfoOptions, Pow } from '@textile/hub'
+import { Buckets, PushPathResult, KeyInfo, PrivateKey, WithKeyInfoOptions } from '@textile/hub'
 import { Button, Header, Segment } from "semantic-ui-react";
 
 import {PhotoSample, Photo, GalleryIndex, AppState} from './Types'
@@ -82,7 +82,7 @@ class App extends React.Component {
        * If any error, create a new identity.
        */
       try {
-        const identity = await PrivateKey.fromRandom()
+        const identity = PrivateKey.fromRandom()
         const identityString = identity.toString()
         localStorage.setItem("identity", identityString)
         return identity

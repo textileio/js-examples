@@ -28,7 +28,7 @@ const getIdentity = (async (): Promise<PrivateKey> => {
      * If any error, create a new identity.
      */
     try {
-      const identity = await PrivateKey.fromRandom()
+      const identity = PrivateKey.fromRandom()
       const identityString = identity.toString()
       localStorage.setItem("identity", identityString)
       return identity

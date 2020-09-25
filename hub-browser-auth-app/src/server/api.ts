@@ -1,7 +1,7 @@
 /** Import our server libraries */
 import koa from "koa";
 import Router from "koa-router";
-import {UserAuth} from "@textile/hub"
+import { UserAuth } from "@textile/hub"
 
 import { getAPISig } from './hub-helpers';
 
