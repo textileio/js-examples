@@ -2,7 +2,7 @@ import route from "koa-route";
 import Emittery from "emittery";
 import { UserAuth } from "@textile/hub"
 
-import {newClientDB, getAPISig} from "./hub-helpers"
+import { newClientDB, getAPISig } from "./hub-helpers"
 
 interface UserModel {
   pubkey: string

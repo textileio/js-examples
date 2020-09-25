@@ -30,9 +30,9 @@ export const getCachedUserThread = async (): Promise<ThreadID | undefined> => {
 export const generateIdentity = async (): Promise<PrivateKey> => {
   let idStr = await AsyncStorage.getItem(IDENTITY_KEY)
   if (idStr) {
-    return await PrivateKey.fromString(idStr)
+    return PrivateKey.fromString(idStr)
   } else {
-    const id = await PrivateKey.fromRandom()
+    const id = PrivateKey.fromRandom()
     idStr = id.toString()
     await AsyncStorage.setItem(IDENTITY_KEY, idStr)
     return id

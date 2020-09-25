@@ -14,7 +14,7 @@ import Prompt from 'react-native-input-prompt'
 import { USER_API_SECRET, USER_API_KEY } from 'react-native-dotenv'
 // @ts-ignore
 import Filter from 'bad-words'
-import { Buckets, Client, KeyInfo, ThreadID, Where  } from '@textile/hub'
+import { Buckets, Client, KeyInfo, ThreadID, Where } from '@textile/hub'
 import {
   createAstronaut,
   generateWebpage,
@@ -155,7 +155,7 @@ class CheckList extends React.Component<StateProps> {
             /**
              * We add our first Collection to the DB for Astronauts.
              */
-            await db.newCollection(threadId, 'Astronaut', astronautSchema)
+            await db.newCollection(threadId, { name: 'Astronaut', schema: astronautSchema })
           }
 
           /**
@@ -203,7 +203,7 @@ class CheckList extends React.Component<StateProps> {
           const q = new Where('firstName').eq('Buzz')
           const r = await db.find(threadId!, 'Astronaut', q)
 
-          const ids = r.instancesList.map((instance: any) => instance._id)
+          const ids = r.map((instance: any) => instance._id)
 
           /**
            * Clean up our entries (just delete them all!)

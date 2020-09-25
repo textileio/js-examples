@@ -36,11 +36,11 @@ class App extends React.Component {
       if (storedIdent === null) {
         throw new Error('No identity')
       }
-      identity = await PrivateKey.fromString(storedIdent)
+      identity = PrivateKey.fromString(storedIdent)
       return identity
     } catch (e) {
       try {
-        identity = await PrivateKey.fromRandom()
+        identity = PrivateKey.fromRandom()
         const identityString = identity.toString()
         await space.private.set("ed25519-identity", identityString)
       } catch (err) {
