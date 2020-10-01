@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+npm install -g npm-check-updates
+
+for d in */ ; do
+    echo "updating: $d"
+    (cd $d && npx ncu -u '/^@textile/.*$/' && npm install)
+done
+
