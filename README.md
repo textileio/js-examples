@@ -87,7 +87,7 @@ You can run the server and client in development mode by opening two terminal wi
 **Terminal 1: watch the client code**
 
 ```bash
-npm run start:basic
+npm run dev:client
 ```
 
 **Terminal 2: start the dev server**
