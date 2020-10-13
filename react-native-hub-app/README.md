@@ -11,7 +11,7 @@ npm install --save react-native-dotenv
 mv example.env .env
 ```
 
-edit `.env`. add your own api key and secret from `tt`, the Textile Hub CLI.
+edit `.env`. add your own api key and secret from `hub`, the [Textile Hub CLI](https://docs.textile.io/hub/accounts/).
 
 ## App
 
