@@ -43,21 +43,17 @@ async function main (insecure = true) {
       process.env.NODE_ENV !== 'production'
     )
   } else {
-    const auth = await createUserAuth(
+    // Create user auth object with auth signature valid for 30 minutes.
+    client = Client.withUserAuth(await createUserAuth(
       process.env.APP_API_KEY, // User group key
       process.env.APP_API_SECRET // User group key secret
-    )
-    console.log(auth)
-    // Create user auth object with auth signature valid for 30 minutes.
-    client = Client.withUserAuth(auth,
-      API,
-      process.env.NODE_ENV !== 'production'
+    ),
+    API,
+    process.env.NODE_ENV !== 'production'
     )
   }
   // Now that we have the pertinent metadata, authenticate user with hub.
-  const ident = identity(process.env.APP_IDENTITY)
-  console.log(ident.toString())
-  await client.getToken(ident)
+  await client.getToken(identity(process.env.APP_IDENTITY))
 }
 
 // Run main async program.
