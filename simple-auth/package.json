@@ -1,0 +1,31 @@
+{
+  "name": "auth-test",
+  "version": "1.0.0",
+  "description": "a tiny npm package for testing textile auth flows",
+  "main": "index.js",
+  "module": "index.js",
+  "type": "module",
+  "scripts": {
+    "textile:check": "npx ncu '/^@textile/.*$/'",
+    "textile:upgrade": "npx ncu -u '/^@textile/.*$/'"
+  },
+  "keywords": [
+    "test",
+    "auth",
+    "textile",
+    "security"
+  ],
+  "author": "Carson Farmer <carson@textile.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^7.14.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1"
+  },
+  "dependencies": {
+    "@textile/hub": "^2.0.2",
+    "dotenv": "^8.2.0"
+  }
+}
