@@ -1,5 +1,4 @@
 import hub from '@textile/hub'
-import security from '@textile/security'
 import dotenv from 'dotenv'
 import fs from 'fs'
 
@@ -9,8 +8,7 @@ dotenv.config()
 // Default to hub api.
 const API = process.env.API || undefined
 // Pull out required modules
-const { Client, PrivateKey } = hub
-const { createUserAuth } = security
+const { Client, PrivateKey, createUserAuth } = hub
 
 /**
  * Create random identity for testing.

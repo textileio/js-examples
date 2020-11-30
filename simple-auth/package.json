@@ -6,7 +6,8 @@
   "module": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha"
+    "textile:check": "npx ncu '/^@textile/.*$/'",
+    "textile:upgrade": "npx ncu -u '/^@textile/.*$/'"
   },
   "keywords": [
     "test",
@@ -24,8 +25,7 @@
     "eslint-plugin-promise": "^4.2.1"
   },
   "dependencies": {
-    "@textile/hub": "^2.0.1",
-    "@textile/security": "^0.6.2",
+    "@textile/hub": "^2.0.2",
     "dotenv": "^8.2.0"
   }
 }

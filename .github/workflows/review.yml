@@ -27,7 +27,8 @@ jobs:
           'react-native-hub-app',
           'metamask-identities-ed25519',
           '3box-identities-ed25519',
-          'user-mailbox-setup'
+          'user-mailbox-setup',
+          'simple-auth'
         ]
     steps:
       - name: Checkout
