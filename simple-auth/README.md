@@ -15,6 +15,7 @@ mv example.env .env
 Edit `.env`. add your own api key and secret from `hub keys ls`, using the Textile Hub CLI.
 You can also create new keys with `hub keys create`. Be sure to create secure keys for production
 apps.
+Leave `APP_IDENTITY` empty if you do not have a private key to use. The first time you run `index.js` a new identity will be created and stored there. 
 
 ## App
 
