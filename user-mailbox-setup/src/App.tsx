@@ -116,7 +116,7 @@ class App extends React.Component {
         delete: <ButtonSecondary onClick={() => {
           // Deletes this message from the inbox
           this.deleteMessage(message.id)
-        }}>+</ButtonSecondary>
+        }}>x</ButtonSecondary>
       }
     })
     return (
