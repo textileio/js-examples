@@ -25,7 +25,7 @@
     "eslint-plugin-promise": "^4.2.1"
   },
   "dependencies": {
-    "@textile/hub": "^4.0.0",
+    "@textile/hub": "^5.0.0",
     "dotenv": "^8.2.0"
   }
 }
