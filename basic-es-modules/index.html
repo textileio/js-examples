@@ -22,7 +22,7 @@
     async function createAndAuthenticate() {
       // Connect to the API with hub keys.
       // Use withUserAuth for production.
-      const client = await Client.withKeyInfo({ key: '' });
+      const client = await Client.withKeyInfo({ key: 'HUB API KEY HERE' });
       // Authorize the user to access your Huh api
       return client.getToken(identity);
     // Now we're authenticated... start creating buckets or threaddb updates!
