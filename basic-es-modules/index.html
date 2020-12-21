@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Textile ES Modules</title>
+</head>
+
+<body>
+  <script type="module">
+    import { Client, PrivateKey } from "https://unpkg.com/@textile/hub@5.0.1?module";
+
+    // Example identity only. Your users should have their own private keys
+    const PrivateKeyIdentity = 'bbaareqhvbkss57bqe7u2jz3hmoitqntbbdflalqbnmtpm7t7yq7ee5rhyvre23iivcvttvguhghjt2ht4i2dan7zak7v7h55yblnd5cbwe3m2';
+    
+    // Setup the user's PrivateKey identity
+    const identity = PrivateKey.fromString(PrivateKeyIdentity);
+    const h1 = document.createElement('h1');
+    h1.textContent = identity.public.toString();
+    document.body.appendChild(h1);
+
+    async function createAndAuthenticate() {
+      // Connect to the API with hub keys.
+      // Use withUserAuth for production.
+      const client = await Client.withKeyInfo({ key: '' });
+      // Authorize the user to access your Huh api
+      return client.getToken(identity);
+    // Now we're authenticated... start creating buckets or threaddb updates!
+    }
+
+    createAndAuthenticate().then((token) => {
+      console.log(token)
+    });
+  </script>
+</body>
+
+</html>
