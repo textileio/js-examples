@@ -39,7 +39,7 @@ class App extends React.Component {
     // Use withUserAuth for production.
     this.client = await Users.withKeyInfo({key: 'HUB API KEY HERE'})
 
-    // Authorize the user to access your Huh api
+    // Authorize the user to access your Hub api
     await this.client.getToken(identity)
 
     // Setup the user's mailbox
