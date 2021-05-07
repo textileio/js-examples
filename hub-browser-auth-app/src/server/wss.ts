@@ -59,7 +59,7 @@ const wss = route.all('/ws/userauth', (ctx) => {
                 value: Buffer.from(challenge).toJSON(),
               }))
               /** Wait for the challenge event from our event emitter */
-              emitter.on('challenge', (sig) => {
+              emitter.on('challenge', (sig:any) => {
                 /** Resolve the promise with the challenge response */
                 resolve(Buffer.from(sig))
               });
